@@ -7,7 +7,7 @@ public interface DepinderConstants {
 
     String CONFIGURATION_FOLDER = "configuration";
     String RESULTS_FOLDER = "results";
-    String JSON_FINGERPRINT_FILES = "jsonFingerprints";
+    String JSON_FINGERPRINT_FILES = "dependecies";
 
 
     String CONFIGURATION_FILE = "depinder-conf.properties";
