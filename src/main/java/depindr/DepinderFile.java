@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @Builder
 public class DepinderFile {
-    private String name, path, content;
+    private String name, path, content, extension;
     private List<Integer> lineBreaks;
     private int lines;
 

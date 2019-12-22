@@ -3,6 +3,9 @@ package depindr;
 
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
+import depindr.json.Dependency;
+import depindr.json.JsonConfigurationDTO;
+import depindr.json.JsonFingerprintParser;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +19,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /*
-* #DONE read configuration file
-* #DONE Read dependecies from .json file
+* #DONE 0.Read configuration file
+* #DONE 1.Read dependecies from .json file and print on console the file
+* #TODO 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
 * */
 
 @Slf4j
@@ -65,6 +69,18 @@ public class Depinder {
 //            df.printInfo();
 //
 //        }
+
+        testJsonParser();
+    }
+
+    public static void testJsonParser(){
+        String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES);
+
+        JsonFingerprintParser jsonFingerprintParser = new JsonFingerprintParser();
+        List<Dependency> jsonDependencies = jsonFingerprintParser.parseTechnologiesFile(rootFolder);
+
+
+        jsonDependencies.forEach(System.out::println);
     }
 
     @NotNull
