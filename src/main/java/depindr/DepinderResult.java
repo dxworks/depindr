@@ -1,5 +1,8 @@
 package depindr;
 
+import depindr.json.Dependency;
+import depindr.model.Author;
+import depindr.model.Commit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,4 +15,9 @@ public class DepinderResult {
     private String category;
     private String file;
     private Integer value;
+
+    private Commit commit;
+    private DepinderFile depinderFile;
+    private Author author;
+    private Dependency dependency;
 }

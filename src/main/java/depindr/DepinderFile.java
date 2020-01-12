@@ -1,5 +1,8 @@
 package depindr;
 
+import depindr.configuration.DepinderConfiguration;
+import depindr.constants.DepinderConstants;
+import depindr.model.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @Builder
-public class DepinderFile {
+public class DepinderFile implements Entity<String> {
     private String name, path, content, extension;
     private List<Integer> lineBreaks;
     private int lines;
+
+    private List<DepinderResult> results = new ArrayList<>();
 
     public DepinderFile(){
         extractLineBreaks(content);
@@ -35,5 +40,20 @@ public class DepinderFile {
 
     void printInfo(){
         log.info("\nContains: " + name + path + content);
+    }
+
+    public void addResults(List<DepinderResult> depinderResults) {
+        results.addAll(depinderResults);
+    }
+
+    @Override
+    public String getID() {
+        return getFullyQualifiedName();
+    }
+
+    public String getFullyQualifiedName() {
+        return getPath()
+                .substring(DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER).length() + 1)
+                .replace('\\', '/');
     }
 }

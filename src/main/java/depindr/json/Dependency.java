@@ -2,11 +2,11 @@ package depindr.json;
 
 import depindr.DepinderFile;
 import depindr.DepinderResult;
-import depindr.configuration.DepinderConfiguration;
-import depindr.constants.DepinderConstants;
+import depindr.model.Entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
-public class Dependency {
+public class Dependency implements Entity<String> {
 
     private final LanguageRegistry languageRegistry = LanguageRegistry.getInstance();
     private String category;
@@ -24,6 +24,8 @@ public class Dependency {
     private List<String> extensions;
     private List<String> fingerprints;
     private List<Pattern> patterns;
+
+    private List<DepinderResult> depinderResults = new ArrayList<>();
 
     public Dependency(String category, String name, List<String> languages, List<String> extensions,
                       List<String> fingerprints) {
@@ -39,27 +41,28 @@ public class Dependency {
         if (!accepts(depinderFile.getExtension()))
             return Collections.emptyList();
 
-        return patterns.parallelStream()
+        List<DepinderResult> depRes = patterns.parallelStream()
                 .map(pattern -> DepinderResult.builder()
-                        .file(getFullyQualifiedName(depinderFile))
+                        .file(depinderFile.getFullyQualifiedName())
                         .category(category)
                         .name(name)
                         .value(getPatternOccurrencesInFile(depinderFile, pattern))
+                        .dependency(this)
+                        .depinderFile(depinderFile)
                         .build())
+
                 .collect(Collectors.toList());
+
+        depinderResults.addAll(depRes);
+        depinderFile.addResults(depRes);
+
+        return depRes;
     }
 
 
     private boolean accepts(String extension) {
         return languages.stream().anyMatch(language -> languageRegistry.isOfLanguage(language, extension))
                 || extensions.contains(extension);
-    }
-
-    private String getFullyQualifiedName(DepinderFile depinderFile) {
-        return depinderFile
-                .getPath()
-                .substring(DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER).length() + 1)
-                .replace('\\', '/');
     }
 
     private int getPatternOccurrencesInFile(DepinderFile insiderFile, Pattern pattern) {
@@ -69,5 +72,10 @@ public class Dependency {
         while (matcher.find())
             fileOcc++;
         return fileOcc;
+    }
+
+    @Override
+    public String getID() {
+        return String.join(", ", name, category);
     }
 }

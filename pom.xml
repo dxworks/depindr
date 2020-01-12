@@ -23,6 +23,13 @@
     </build>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>5.6.0.201912101111-r</version>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -44,6 +51,7 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>

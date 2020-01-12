@@ -3,26 +3,33 @@ package depindr;
 
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
+import depindr.exceptions.DepinderException;
+import depindr.git.GitClient;
 import depindr.json.Dependency;
-import depindr.json.JsonConfigurationDTO;
 import depindr.json.JsonFingerprintParser;
+import depindr.model.Author;
+import depindr.model.AuthorRegistry;
+import depindr.model.Commit;
+import depindr.model.CommitRegistry;
+import depindr.model.dto.CommitDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /*
-* #DONE 0.Read configuration file
-* #DONE 1.Read dependecies from .json file and print on console the file
-* #TODO 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
-* */
+ * #DONE 0.Read configuration file
+ * #DONE 1.Read dependecies from .json file and print on console the file2hj[;l,ikp v
+ * #TODO 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
+ * */
 
 @Slf4j
 public class Depinder {
@@ -44,50 +51,80 @@ public class Depinder {
 
         DepinderConfiguration.loadProperties(properties);
 
-        String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES);
+        List<Dependency> dependencies = readDependencyFingerprints();
 
-        log.info("Check to see it read correctly\n" + getPropertyAsString(properties));
+        String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER);
 
-        List<DepinderFile> depinderFiles = new ArrayList<>();
-        try {
-            List<Path> pathList = Files.walk(Paths.get(rootFolder)).collect(Collectors.toList());
-            for(Path path : pathList){
-                //log.debug("debug: " + path);
-                depinderFiles.add(DepinderFile.builder()
-                        .path(path.toAbsolutePath().toString())
-                        .name(path.getFileName().toString())
-                        .content(new String(Files.readAllBytes(path)))
-                        .build());
+        AuthorRegistry authorRegistry = new AuthorRegistry();
+        CommitRegistry commitRegistry = new CommitRegistry();
+
+        //check if root folder is a git repository
+        GitClient gitClient = new GitClient();
+        List<CommitDTO> allCommitNames = gitClient.getAllCommitNames(rootFolder);
+
+        //checkout each commit, read files, match fingerprints, create models.
+        for (CommitDTO commitDTO : allCommitNames) {
+            Author author = Author.fromDTO(commitDTO.getAuthor());
+            author = authorRegistry.add(author);
+
+            Commit commit = Commit.fromDTO(commitDTO);
+            commit.setAuthor(author);
+            commit = commitRegistry.add(commit);
+
+            gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
+            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder);
+            for (Dependency dependency : dependencies) {
+                for (DepinderFile depinderFile : depinderFiles) {
+                    List<DepinderResult> depinderResults = dependency.analyze(depinderFile);
+                    for (DepinderResult depinderResult : depinderResults) {
+                        depinderResult.setCommit(commit);
+                        commit.addResult(depinderResult);
+                        depinderResult.setAuthor(author);
+                        author.addResult(depinderResult);
+                    }
+                }
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        // for debugging purposes
-//        for (DepinderFile df : depinderFiles){
-//            df.printInfo();
-//
-//        }
+        System.out.println("gata");
 
-        testJsonParser();
+//        gitClient.cloneRepo("https://github.com/bilbor987/AT_parser.git");
+//        gitClient.cloneRepo("https://github.com/bilbor987/DepindR_2.0.git");
+//        gitClient.printAllCommits("AT_parser");
+//        gitClient.printAllCommits("DepindR_2.0");
+
+
     }
 
-    public static void testJsonParser(){
+    private static List<DepinderFile> readFilesFromRepo(String rootFolder) {
+        try {
+            return Files.walk(Paths.get(rootFolder))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> !path.toFile().getAbsolutePath().contains(".git"))
+                    .map(path -> {
+                        try {
+                            return DepinderFile.builder()
+                                    .path(path.toAbsolutePath().toString())
+                                    .name(path.getFileName().toString())
+                                    .content(new String(Files.readAllBytes(path)))
+                                    .build();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new DepinderException("Could not read from folder " + rootFolder, e);
+        }
+    }
+
+    public static List<Dependency> readDependencyFingerprints() {
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES);
 
         JsonFingerprintParser jsonFingerprintParser = new JsonFingerprintParser();
-        List<Dependency> jsonDependencies = jsonFingerprintParser.parseTechnologiesFile(rootFolder);
-
-
-        jsonDependencies.forEach(System.out::println);
-    }
-
-    @NotNull
-    private static String getPropertyAsString(Properties prop) {
-        StringWriter writer = new StringWriter();
-        prop.list(new PrintWriter(writer));
-        return writer.getBuffer().toString();
+        return jsonFingerprintParser.parseTechnologiesFile(rootFolder);
     }
 
 }

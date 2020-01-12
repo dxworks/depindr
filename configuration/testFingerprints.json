@@ -39,6 +39,18 @@
         "org.junit.runners"
       ],
       "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
+      "name": "Java Util",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "java.util"
+      ],
+      "wrapAsImports": true
     }
   ]
 }
