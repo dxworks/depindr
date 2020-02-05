@@ -1,0 +1,2 @@
+When creating the fingerprints.json file you need to be careful not to "duplicate" searches
+(eg: "lombok" and "lombock.extern" in the same dependency, because you will get double results

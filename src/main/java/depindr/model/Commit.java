@@ -14,6 +14,8 @@ public class Commit implements Entity<String> {
     private ZonedDateTime authorTimestamp;
     private List<DepinderResult> results = new ArrayList<>();
 
+    private FileRegistry fileRegistry;
+
     public static Commit fromDTO(CommitDTO commitDTO) {
         Commit commit = new Commit();
         commit.id = commitDTO.getCommitID();
@@ -33,5 +35,9 @@ public class Commit implements Entity<String> {
 
     public void addResult(DepinderResult depinderResult) {
         results.add(depinderResult);
+    }
+
+    public void setFileRegistry(FileRegistry fileRegistry) {
+        this.fileRegistry = fileRegistry;
     }
 }

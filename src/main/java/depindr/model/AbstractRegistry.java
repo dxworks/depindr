@@ -1,8 +1,6 @@
 package depindr.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractRegistry<E extends Entity<ID>, ID> {
     private Map<ID, E> map = new HashMap<>();
@@ -16,5 +14,13 @@ public abstract class AbstractRegistry<E extends Entity<ID>, ID> {
             return map.get(entity.getID());
         map.put(entity.getID(), entity);
         return entity;
+    }
+
+    public void addAll(List<E> entities) {
+        entities.forEach(this::add);
+    }
+
+    public Collection<E> getAll() {
+        return map.values();
     }
 }

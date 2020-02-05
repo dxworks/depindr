@@ -7,12 +7,10 @@ import depindr.exceptions.DepinderException;
 import depindr.git.GitClient;
 import depindr.json.Dependency;
 import depindr.json.JsonFingerprintParser;
-import depindr.model.Author;
-import depindr.model.AuthorRegistry;
-import depindr.model.Commit;
-import depindr.model.CommitRegistry;
+import depindr.model.*;
 import depindr.model.dto.CommitDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -51,15 +49,22 @@ public class Depinder {
 
         DepinderConfiguration.loadProperties(properties);
 
-        List<Dependency> dependencies = readDependencyFingerprints();
 
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER);
+        String branchName = DepinderConfiguration.getInstance().getProperty(DepinderConstants.BRANCH);
 
         AuthorRegistry authorRegistry = new AuthorRegistry();
         CommitRegistry commitRegistry = new CommitRegistry();
+        DependencyRegistry dependencyRegistry = new DependencyRegistry();
+
+        List<Dependency> dependencies = readDependencyFingerprints();
+        dependencyRegistry.addAll(dependencies);
 
         //check if root folder is a git repository
         GitClient gitClient = new GitClient();
+
+        gitClient.checkoutCommitForRepo(rootFolder, branchName);
+
         List<CommitDTO> allCommitNames = gitClient.getAllCommitNames(rootFolder);
 
         //checkout each commit, read files, match fingerprints, create models.
@@ -67,16 +72,19 @@ public class Depinder {
             Author author = Author.fromDTO(commitDTO.getAuthor());
             author = authorRegistry.add(author);
 
+            FileRegistry fileRegistry = new FileRegistry();
+
             Commit commit = Commit.fromDTO(commitDTO);
             commit.setAuthor(author);
             commit = commitRegistry.add(commit);
+            commit.setFileRegistry(fileRegistry);
 
             gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
-            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder);
+            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry);
             for (Dependency dependency : dependencies) {
                 for (DepinderFile depinderFile : depinderFiles) {
-                    List<DepinderResult> depinderResults = dependency.analyze(depinderFile);
-                    for (DepinderResult depinderResult : depinderResults) {
+                    DepinderResult depinderResult = dependency.analyze(depinderFile);
+                    if (depinderResult != null) {
                         depinderResult.setCommit(commit);
                         commit.addResult(depinderResult);
                         depinderResult.setAuthor(author);
@@ -84,30 +92,28 @@ public class Depinder {
                     }
                 }
             }
+
+            fileRegistry.getAll().forEach(depinderFile -> depinderFile.setContent(null));
         }
 
         System.out.println("gata");
-
-//        gitClient.cloneRepo("https://github.com/bilbor987/AT_parser.git");
-//        gitClient.cloneRepo("https://github.com/bilbor987/DepindR_2.0.git");
-//        gitClient.printAllCommits("AT_parser");
-//        gitClient.printAllCommits("DepindR_2.0");
-
-
     }
 
-    private static List<DepinderFile> readFilesFromRepo(String rootFolder) {
+    private static List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry) {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
                     .filter(path -> !path.toFile().getAbsolutePath().contains(".git"))
                     .map(path -> {
                         try {
-                            return DepinderFile.builder()
+                            DepinderFile depinderFile = DepinderFile.builder()
                                     .path(path.toAbsolutePath().toString())
                                     .name(path.getFileName().toString())
-                                    .content(new String(Files.readAllBytes(path)))
+                                    .extension(FilenameUtils.getExtension(path.getFileName().toString()))
+                                    .content(readFileContentWithLfEnding(path))
                                     .build();
+                            fileRegistry.add(depinderFile);
+                            return depinderFile;
                         } catch (IOException e) {
                             e.printStackTrace();
                             return null;
@@ -118,6 +124,12 @@ public class Depinder {
         } catch (IOException e) {
             throw new DepinderException("Could not read from folder " + rootFolder, e);
         }
+    }
+
+    private static String readFileContentWithLfEnding(Path path) throws IOException {
+        return new String(Files.readAllBytes(path))
+                .replaceAll("\\r\\n", "\n") //remove Windows line endings
+                .replaceAll("\\r", "\n"); //remove Mac line endings
     }
 
     public static List<Dependency> readDependencyFingerprints() {

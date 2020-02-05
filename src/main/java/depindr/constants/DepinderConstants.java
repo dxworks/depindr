@@ -3,6 +3,7 @@ package depindr.constants;
 public interface DepinderConstants {
 
     String PROJECT_ID = "projectID";
+    String BRANCH = "branch";
     String ROOT_FOLDER = "rootFolder";
 
     String CONFIGURATION_FOLDER = "configuration";

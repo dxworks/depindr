@@ -43,15 +43,11 @@ public class DependencyJsonDTO {
     }
 
     public Dependency toDependency() {
-        Dependency technology = new Dependency();
-
-        technology.setName(name);
-        technology.setCategory(category);
-        technology.setLanguages(languages != null ? languages : Collections.emptyList());
-        technology.setExtensions(extensions != null ? extensions : Collections.emptyList());
-        technology.setFingerprints(fingerprints == null ? Collections.emptyList() : wrapAsImports ? fingerprintsWrappedAsImports() : fingerprints);
-
-        return technology;
+        return new Dependency(category,
+                name,
+                languages != null ? languages : Collections.emptyList(),
+                extensions != null ? extensions : Collections.emptyList(),
+                fingerprints == null ? Collections.emptyList() : wrapAsImports ? fingerprintsWrappedAsImports() : fingerprints);
     }
 
     private List<String> fingerprintsWrappedAsImports() {

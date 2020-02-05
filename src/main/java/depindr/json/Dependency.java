@@ -3,13 +3,12 @@ package depindr.json;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
 import depindr.model.Entity;
+import depindr.model.FingerprintMatch;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -37,41 +36,38 @@ public class Dependency implements Entity<String> {
         patterns = fingerprints.stream().map(Pattern::compile).collect(Collectors.toList());
     }
 
-    public List<DepinderResult> analyze(DepinderFile depinderFile) {
+    public DepinderResult analyze(DepinderFile depinderFile) {
         if (!accepts(depinderFile.getExtension()))
-            return Collections.emptyList();
+            return null;
 
-        List<DepinderResult> depRes = patterns.parallelStream()
-                .map(pattern -> DepinderResult.builder()
-                        .file(depinderFile.getFullyQualifiedName())
-                        .category(category)
-                        .name(name)
-                        .value(getPatternOccurrencesInFile(depinderFile, pattern))
-                        .dependency(this)
-                        .depinderFile(depinderFile)
-                        .build())
-
+        List<FingerprintMatch> fingerprintMatches = patterns.parallelStream()
+                .flatMap(depinderFile::getMatchesInFile)
+                .distinct()
                 .collect(Collectors.toList());
 
-        depinderResults.addAll(depRes);
-        depinderFile.addResults(depRes);
+        DepinderResult depinderResult = null;
+        if (fingerprintMatches.size() > 0) {
+            depinderResult = DepinderResult.builder()
+                    .file(depinderFile.getFullyQualifiedName())
+                    .category(category)
+                    .name(name)
+                    .value(fingerprintMatches.size())
+                    .fingerprintMatches(fingerprintMatches)
+                    .dependency(this)
+                    .depinderFile(depinderFile)
+                    .build();
 
-        return depRes;
+            depinderResults.add(depinderResult);
+            depinderFile.addResult(depinderResult);
+        }
+
+        return depinderResult;
     }
 
 
     private boolean accepts(String extension) {
         return languages.stream().anyMatch(language -> languageRegistry.isOfLanguage(language, extension))
                 || extensions.contains(extension);
-    }
-
-    private int getPatternOccurrencesInFile(DepinderFile insiderFile, Pattern pattern) {
-        int fileOcc = 0;
-        Matcher matcher = pattern.matcher(insiderFile.getContent());
-
-        while (matcher.find())
-            fileOcc++;
-        return fileOcc;
     }
 
     @Override
