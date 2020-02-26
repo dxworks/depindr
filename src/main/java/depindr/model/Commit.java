@@ -40,4 +40,12 @@ public class Commit implements Entity<String> {
     public void setFileRegistry(FileRegistry fileRegistry) {
         this.fileRegistry = fileRegistry;
     }
+
+    public ZonedDateTime getAuthorTimestamp() {
+        return authorTimestamp;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
 }

@@ -28,7 +28,7 @@ public class DepinderFile implements Entity<String> {
         return new DepinderFileBuilder();
     }
 
-    public void init() {
+    public void init() { //aici bag treaba cu remove comments?
         extractLineBreaks(content);
         lines = lineBreaks.size();
         results = new ArrayList<>();

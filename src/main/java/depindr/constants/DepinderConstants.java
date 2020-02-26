@@ -5,6 +5,7 @@ public interface DepinderConstants {
     String PROJECT_ID = "projectID";
     String BRANCH = "branch";
     String ROOT_FOLDER = "rootFolder";
+    String REMOVE_COMMENTS = "removeComments";
 
     String CONFIGURATION_FOLDER = "configuration";
     String RESULTS_FOLDER = "results";

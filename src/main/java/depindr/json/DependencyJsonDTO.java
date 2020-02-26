@@ -43,7 +43,8 @@ public class DependencyJsonDTO {
     }
 
     public Dependency toDependency() {
-        return new Dependency(category,
+        return new Dependency(
+                category,
                 name,
                 languages != null ? languages : Collections.emptyList(),
                 extensions != null ? extensions : Collections.emptyList(),

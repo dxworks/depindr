@@ -18,15 +18,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static depindr.utils.FileUtils.removeComments;
+
 /*
  * #DONE 0.Read configuration file
- * #DONE 1.Read dependecies from .json file and print on console the file2hj[;l,ikp v
- * #TODO 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
+ * #DONE 1.Read dependecies from .json file and print on console the file
+ * #DONE 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
  * */
 
 @Slf4j
@@ -52,6 +55,7 @@ public class Depinder {
 
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER);
         String branchName = DepinderConfiguration.getInstance().getProperty(DepinderConstants.BRANCH);
+        String removeCommentsFlag = DepinderConfiguration.getInstance().getProperty(DepinderConstants.REMOVE_COMMENTS);
 
         AuthorRegistry authorRegistry = new AuthorRegistry();
         CommitRegistry commitRegistry = new CommitRegistry();
@@ -80,9 +84,9 @@ public class Depinder {
             commit.setFileRegistry(fileRegistry);
 
             gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
-            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry);
+            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry, removeCommentsFlag);
             for (Dependency dependency : dependencies) {
-                for (DepinderFile depinderFile : depinderFiles) {
+                for (DepinderFile depinderFile : depinderFiles) { //aici bag treaba cu remove comments?
                     DepinderResult depinderResult = dependency.analyze(depinderFile);
                     if (depinderResult != null) {
                         depinderResult.setCommit(commit);
@@ -97,9 +101,19 @@ public class Depinder {
         }
 
         System.out.println("gata");
+
+        dependencyRegistry.getAll().forEach(dependency -> {
+            List<Commit> commits = dependency.getDepinderResults().stream()
+                    .map(DepinderResult::getCommit)
+                    .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
+                    .collect(Collectors.toList());
+
+            commits.stream().findFirst().ifPresent(commit -> System.out.printf("Dependency %s appeared in commit %s on %s%n", dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString()));
+
+        });
     }
 
-    private static List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry) {
+    private static List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry, String flag) {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
@@ -110,7 +124,7 @@ public class Depinder {
                                     .path(path.toAbsolutePath().toString())
                                     .name(path.getFileName().toString())
                                     .extension(FilenameUtils.getExtension(path.getFileName().toString()))
-                                    .content(readFileContentWithLfEnding(path))
+                                    .content(readFileContentWithLfEnding(path, flag))
                                     .build();
                             fileRegistry.add(depinderFile);
                             return depinderFile;
@@ -126,10 +140,13 @@ public class Depinder {
         }
     }
 
-    private static String readFileContentWithLfEnding(Path path) throws IOException {
-        return new String(Files.readAllBytes(path))
+    private static String readFileContentWithLfEnding(Path path, String flag) throws IOException { //aici bag treaba cu remove comments?
+        String s = new String(Files.readAllBytes(path))
                 .replaceAll("\\r\\n", "\n") //remove Windows line endings
                 .replaceAll("\\r", "\n"); //remove Mac line endings
+        if (flag.equals("true"))
+            s = removeComments(s);
+        return s;
     }
 
     public static List<Dependency> readDependencyFingerprints() {
