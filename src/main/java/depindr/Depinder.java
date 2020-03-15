@@ -52,10 +52,10 @@ public class Depinder {
 
         DepinderConfiguration.loadProperties(properties);
 
-
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER);
         String branchName = DepinderConfiguration.getInstance().getProperty(DepinderConstants.BRANCH);
         String removeCommentsFlag = DepinderConfiguration.getInstance().getProperty(DepinderConstants.REMOVE_COMMENTS);
+        String technologyToSearchFor = DepinderConfiguration.getInstance().getProperty(DepinderConstants.TECH_TO_SEARCH_FOR);
 
         AuthorRegistry authorRegistry = new AuthorRegistry();
         CommitRegistry commitRegistry = new CommitRegistry();
@@ -86,7 +86,7 @@ public class Depinder {
             gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
             List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry, removeCommentsFlag);
             for (Dependency dependency : dependencies) {
-                for (DepinderFile depinderFile : depinderFiles) { //aici bag treaba cu remove comments?
+                for (DepinderFile depinderFile : depinderFiles) {
                     DepinderResult depinderResult = dependency.analyze(depinderFile);
                     if (depinderResult != null) {
                         depinderResult.setCommit(commit);
@@ -102,6 +102,12 @@ public class Depinder {
 
         System.out.println("gata");
 
+        technologyWithinFiles(commitRegistry, dependencyRegistry, technologyToSearchFor);
+
+        whenDidATechAppear(dependencyRegistry);
+    }
+
+    private static void whenDidATechAppear(DependencyRegistry dependencyRegistry) {
         dependencyRegistry.getAll().forEach(dependency -> {
             List<Commit> commits = dependency.getDepinderResults().stream()
                     .map(DepinderResult::getCommit)
@@ -109,6 +115,22 @@ public class Depinder {
                     .collect(Collectors.toList());
 
             commits.stream().findFirst().ifPresent(commit -> System.out.printf("Dependency %s appeared in commit %s on %s%n", dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString()));
+        });
+    }
+
+    private static void technologyWithinFiles(CommitRegistry commitRegistry, DependencyRegistry dependencyRegistry, String tech) {
+        Commit lastCommit = commitRegistry.getLastCommit().get();
+        dependencyRegistry.getAll().forEach(dependency -> {
+            List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
+                    .filter(depinderResult -> depinderResult.getCommit().equals(lastCommit))
+                    .map(DepinderResult::getDepinderFile)
+                    .map(DepinderFile::getName)
+                    .filter(s -> dependency.getName().equals(tech))
+                    .collect(Collectors.toList());
+
+            if (!filesWithCertainTech.isEmpty())
+                System.out.printf("%s: has %s \n", dependency.getName(), filesWithCertainTech.toString());
+
 
         });
     }
@@ -140,7 +162,7 @@ public class Depinder {
         }
     }
 
-    private static String readFileContentWithLfEnding(Path path, String flag) throws IOException { //aici bag treaba cu remove comments?
+    private static String readFileContentWithLfEnding(Path path, String flag) throws IOException {
         String s = new String(Files.readAllBytes(path))
                 .replaceAll("\\r\\n", "\n") //remove Windows line endings
                 .replaceAll("\\r", "\n"); //remove Mac line endings
@@ -149,7 +171,7 @@ public class Depinder {
         return s;
     }
 
-    public static List<Dependency> readDependencyFingerprints() {
+    private static List<Dependency> readDependencyFingerprints() {
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES);
 
         JsonFingerprintParser jsonFingerprintParser = new JsonFingerprintParser();

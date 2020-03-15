@@ -3,7 +3,7 @@ package depindr.model;
 import java.util.*;
 
 public abstract class AbstractRegistry<E extends Entity<ID>, ID> {
-    private Map<ID, E> map = new HashMap<>();
+    protected Map<ID, E> map = new HashMap<>();
 
     public Optional<E> getById(ID id) {
         return Optional.ofNullable(map.get(id));

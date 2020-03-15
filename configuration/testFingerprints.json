@@ -27,6 +27,30 @@
       "wrapAsImports": true
     },
     {
+      "category": "Japa Parser",
+      "name": "Japa Parser",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "japa.parser"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "Tiny Logger",
+      "name": "Tiny Logg",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "org.pmw.tinylog"
+      ],
+      "wrapAsImports": true
+    },
+    {
       "category": "External Libraries",
       "name": "Junit",
       "languages": [

@@ -28,7 +28,7 @@ public class DepinderFile implements Entity<String> {
         return new DepinderFileBuilder();
     }
 
-    public void init() { //aici bag treaba cu remove comments?
+    private void init() {
         extractLineBreaks(content);
         lines = lineBreaks.size();
         results = new ArrayList<>();
@@ -45,7 +45,7 @@ public class DepinderFile implements Entity<String> {
 
     }
 
-    protected int getLineNumberOfAbsoluteCharacterIndex(int index) {
+    int getLineNumberOfAbsoluteCharacterIndex(int index) {
         for (int i = 0; i < lineBreaks.size(); i++) {
             if (index <= lineBreaks.get(i))
                 return i;
@@ -103,22 +103,22 @@ public class DepinderFile implements Entity<String> {
         DepinderFileBuilder() {
         }
 
-        public DepinderFileBuilder name(String name) {
+        DepinderFileBuilder name(String name) {
             this.name = name;
             return this;
         }
 
-        public DepinderFileBuilder path(String path) {
+        DepinderFileBuilder path(String path) {
             this.path = path;
             return this;
         }
 
-        public DepinderFileBuilder content(String content) {
+        DepinderFileBuilder content(String content) {
             this.content = content;
             return this;
         }
 
-        public DepinderFileBuilder extension(String extension) {
+        DepinderFileBuilder extension(String extension) {
             this.extension = extension;
             return this;
         }
@@ -138,7 +138,7 @@ public class DepinderFile implements Entity<String> {
             return this;
         }
 
-        public DepinderFile build() {
+        DepinderFile build() {
             DepinderFile depinderFile = new DepinderFile(name, path, content, extension, lineBreaks, lines, results);
             depinderFile.init();
             return depinderFile;

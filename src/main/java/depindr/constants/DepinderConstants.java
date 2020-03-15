@@ -13,4 +13,5 @@ public interface DepinderConstants {
 
 
     String CONFIGURATION_FILE = "depinder-conf.properties";
+    String TECH_TO_SEARCH_FOR = "tech";
 }
