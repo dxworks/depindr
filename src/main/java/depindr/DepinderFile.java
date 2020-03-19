@@ -42,7 +42,6 @@ public class DepinderFile implements Entity<String> {
                 lineBreaks.add(i);
             }
         }
-
     }
 
     int getLineNumberOfAbsoluteCharacterIndex(int index) {
@@ -50,7 +49,6 @@ public class DepinderFile implements Entity<String> {
             if (index <= lineBreaks.get(i))
                 return i;
         }
-
         return lineBreaks.size();
     }
 

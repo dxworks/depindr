@@ -60,10 +60,8 @@ public class Dependency implements Entity<String> {
             depinderResults.add(depinderResult);
             depinderFile.addResult(depinderResult);
         }
-
         return depinderResult;
     }
-
 
     private boolean accepts(String extension) {
         return languages.stream().anyMatch(language -> languageRegistry.isOfLanguage(language, extension))
