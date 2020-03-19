@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,4 +18,5 @@ public class CommitDTO {
     private ZonedDateTime committerTimestamp;
     private CommitMessageDTO message;
     private String[] parentIDs;
+    private List<String> modifiedFiles;
 }

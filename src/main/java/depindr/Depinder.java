@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.removeComments;
@@ -69,7 +66,7 @@ public class Depinder {
 
         gitClient.checkoutCommitForRepo(rootFolder, branchName);
 
-        List<CommitDTO> allCommitNames = gitClient.getAllCommitNames(rootFolder);
+        List<CommitDTO> allCommitNames = gitClient.getAllCommits(rootFolder);
 
         //checkout each commit, read files, match fingerprints, create models.
         for (CommitDTO commitDTO : allCommitNames) {
@@ -84,7 +81,9 @@ public class Depinder {
             commit.setFileRegistry(fileRegistry);
 
             gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
-            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry, removeCommentsFlag);
+
+            List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().stream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
+            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, modifiedFilePaths, fileRegistry, removeCommentsFlag);
             for (Dependency dependency : dependencies) {
                 for (DepinderFile depinderFile : depinderFiles) {
                     DepinderResult depinderResult = dependency.analyze(depinderFile);
@@ -102,9 +101,12 @@ public class Depinder {
 
         System.out.println("gata");
 
-        technologyWithinFiles(commitRegistry, dependencyRegistry, technologyToSearchFor);
 
-        whenDidATechAppear(dependencyRegistry);
+        //technologyWithinFiles(commitRegistry, dependencyRegistry, technologyToSearchFor);
+
+        //whenDidATechAppear(dependencyRegistry);
+
+        evolutionOfATech(commitRegistry, dependencyRegistry, technologyToSearchFor);
     }
 
     private static void whenDidATechAppear(DependencyRegistry dependencyRegistry) {
@@ -118,6 +120,7 @@ public class Depinder {
         });
     }
 
+    //#TODO maybe would be usefull to know at a certain commit, now it's by default at the last commit
     private static void technologyWithinFiles(CommitRegistry commitRegistry, DependencyRegistry dependencyRegistry, String tech) {
         Commit lastCommit = commitRegistry.getLastCommit().get();
         dependencyRegistry.getAll().forEach(dependency -> {
@@ -128,18 +131,39 @@ public class Depinder {
                     .filter(s -> dependency.getName().equals(tech))
                     .collect(Collectors.toList());
 
-            if (!filesWithCertainTech.isEmpty())
+            if (!filesWithCertainTech.isEmpty()) {
+                System.out.printf("Technology %s is spread in %d files \n", dependency.getName(), filesWithCertainTech.size());
                 System.out.printf("%s: has %s \n", dependency.getName(), filesWithCertainTech.toString());
-
-
+            }
         });
     }
 
-    private static List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry, String flag) {
+    private static void evolutionOfATech(CommitRegistry commitRegistry, DependencyRegistry dependencyRegistry, String tech) {
+        List<Commit> allCommits = new ArrayList<>(commitRegistry.getAll());
+        dependencyRegistry.getAll().forEach(dependency -> {
+            allCommits.forEach(currentCommit -> {
+                List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
+                        .filter(depinderResult -> depinderResult.getCommit().equals(currentCommit))
+                        .map(DepinderResult::getDepinderFile)
+                        .map(DepinderFile::getName)
+                        .filter(s -> dependency.getName().equals(tech))
+                        .collect(Collectors.toList());
+
+                if (!filesWithCertainTech.isEmpty()) {
+                    System.out.printf("Commit: %s technology %s is spread in %d files \n", currentCommit.getID(), dependency.getName(), filesWithCertainTech.size());
+                }
+
+            });
+        });
+
+    }
+
+
+    private static List<DepinderFile> readFilesFromRepo(String rootFolder, List<Path> filesToRead, FileRegistry fileRegistry, String flag) {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
-                    .filter(path -> !path.toFile().getAbsolutePath().contains(".git"))
+                    .filter(filesToRead::contains)
                     .map(path -> {
                         try {
                             DepinderFile depinderFile = DepinderFile.builder()
