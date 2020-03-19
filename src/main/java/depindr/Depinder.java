@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.removeComments;
@@ -31,6 +34,19 @@ import static depindr.utils.FileUtils.removeComments;
 
 @Slf4j
 public class Depinder {
+
+    private AuthorRegistry authorRegistry;
+    private CommitRegistry commitRegistry;
+    private DependencyRegistry dependencyRegistry;
+
+    public Depinder(String dependencyJsonFile) {
+        authorRegistry = new AuthorRegistry();
+        commitRegistry = new CommitRegistry();
+        dependencyRegistry = new DependencyRegistry();
+
+        dependencyRegistry.addAll(readDependencyFingerprints(dependencyJsonFile));
+    }
+
     public static void main(String[] args) {
         System.out.print("Reading configuration file: \n");
 
@@ -52,15 +68,20 @@ public class Depinder {
         String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.ROOT_FOLDER);
         String branchName = DepinderConfiguration.getInstance().getProperty(DepinderConstants.BRANCH);
         String removeCommentsFlag = DepinderConfiguration.getInstance().getProperty(DepinderConstants.REMOVE_COMMENTS);
-        String technologyToSearchFor = DepinderConfiguration.getInstance().getProperty(DepinderConstants.TECH_TO_SEARCH_FOR);
 
-        AuthorRegistry authorRegistry = new AuthorRegistry();
-        CommitRegistry commitRegistry = new CommitRegistry();
-        DependencyRegistry dependencyRegistry = new DependencyRegistry();
+        Depinder depinder = new Depinder(DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES));
 
-        List<Dependency> dependencies = readDependencyFingerprints();
-        dependencyRegistry.addAll(dependencies);
+        depinder.analyzeProject(rootFolder, branchName, removeCommentsFlag);
 
+        System.out.println("gata");
+
+
+        //technologyWithinFiles(commitRegistry, dependencyRegistry, technologyToSearchFor);
+
+        //whenDidATechAppear(dependencyRegistry);
+    }
+
+    public void analyzeProject(String rootFolder, String branchName, String removeCommentsFlag) {
         //check if root folder is a git repository
         GitClient gitClient = new GitClient();
 
@@ -84,7 +105,7 @@ public class Depinder {
 
             List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().stream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
             List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, modifiedFilePaths, fileRegistry, removeCommentsFlag);
-            for (Dependency dependency : dependencies) {
+            for (Dependency dependency : dependencyRegistry.getAll()) {
                 for (DepinderFile depinderFile : depinderFiles) {
                     DepinderResult depinderResult = dependency.analyze(depinderFile);
                     if (depinderResult != null) {
@@ -98,15 +119,6 @@ public class Depinder {
 
             fileRegistry.getAll().forEach(depinderFile -> depinderFile.setContent(null));
         }
-
-        System.out.println("gata");
-
-
-        //technologyWithinFiles(commitRegistry, dependencyRegistry, technologyToSearchFor);
-
-        //whenDidATechAppear(dependencyRegistry);
-
-        evolutionOfATech(commitRegistry, dependencyRegistry, technologyToSearchFor);
     }
 
     private static void whenDidATechAppear(DependencyRegistry dependencyRegistry) {
@@ -138,28 +150,9 @@ public class Depinder {
         });
     }
 
-    private static void evolutionOfATech(CommitRegistry commitRegistry, DependencyRegistry dependencyRegistry, String tech) {
-        List<Commit> allCommits = new ArrayList<>(commitRegistry.getAll());
-        dependencyRegistry.getAll().forEach(dependency -> {
-            allCommits.forEach(currentCommit -> {
-                List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
-                        .filter(depinderResult -> depinderResult.getCommit().equals(currentCommit))
-                        .map(DepinderResult::getDepinderFile)
-                        .map(DepinderFile::getName)
-                        .filter(s -> dependency.getName().equals(tech))
-                        .collect(Collectors.toList());
 
-                if (!filesWithCertainTech.isEmpty()) {
-                    System.out.printf("Commit: %s technology %s is spread in %d files \n", currentCommit.getID(), dependency.getName(), filesWithCertainTech.size());
-                }
-
-            });
-        });
-
-    }
-
-
-    private static List<DepinderFile> readFilesFromRepo(String rootFolder, List<Path> filesToRead, FileRegistry fileRegistry, String flag) {
+    //TODO: refactor flag to boolean
+    private List<DepinderFile> readFilesFromRepo(String rootFolder, List<Path> filesToRead, FileRegistry fileRegistry, String flag) {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
@@ -186,7 +179,7 @@ public class Depinder {
         }
     }
 
-    private static String readFileContentWithLfEnding(Path path, String flag) throws IOException {
+    private String readFileContentWithLfEnding(Path path, String flag) throws IOException {
         String s = new String(Files.readAllBytes(path))
                 .replaceAll("\\r\\n", "\n") //remove Windows line endings
                 .replaceAll("\\r", "\n"); //remove Mac line endings
@@ -195,11 +188,14 @@ public class Depinder {
         return s;
     }
 
-    private static List<Dependency> readDependencyFingerprints() {
-        String rootFolder = DepinderConfiguration.getInstance().getProperty(DepinderConstants.JSON_FINGERPRINT_FILES);
+    private List<Dependency> readDependencyFingerprints(String dependencyJsonFile) {
+        String dependencyFile = dependencyJsonFile;
 
         JsonFingerprintParser jsonFingerprintParser = new JsonFingerprintParser();
-        return jsonFingerprintParser.parseTechnologiesFile(rootFolder);
+        return jsonFingerprintParser.parseTechnologiesFile(dependencyFile);
     }
 
+    public DependencyRegistry getDependencyRegistry() {
+        return dependencyRegistry;
+    }
 }

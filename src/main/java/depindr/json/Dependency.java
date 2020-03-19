@@ -72,4 +72,8 @@ public class Dependency implements Entity<String> {
     public String getID() {
         return String.join(", ", name, category);
     }
+
+    public List<DepinderResult> getResults() {
+        return depinderResults;
+    }
 }
