@@ -22,12 +22,15 @@ public class DependencyEvolutionAnalyzer {
                 .collect(Collectors.groupingBy(DepinderResult::getCommit));
 
         return resultsByCommitId.entrySet().stream()
-                .map(entry -> TechnologySnapshot.builder()
-                        .commitID(entry.getKey().getID())
-                        .snapshotTimestamp(entry.getKey().getAuthorTimestamp())
-                        .numberOfFiles((int) entry.getValue().stream().map(DepinderResult::getFile).distinct().count())
-                        .usageOfTechnology(entry.getValue().stream().mapToInt(DepinderResult::getValue).sum())
-                        .build())
+                .map(entry -> {
+                    System.out.println("");
+                    return TechnologySnapshot.builder()
+                            .commitID(entry.getKey().getID())
+                            .snapshotTimestamp(entry.getKey().getAuthorTimestamp())
+                            .numberOfFiles((int) entry.getValue().stream().map(DepinderResult::getFile).distinct().count())
+                            .usageOfTechnology(entry.getValue().stream().mapToInt(DepinderResult::getValue).sum())
+                            .build();
+                })
                 .collect(Collectors.toSet());
     }
 }

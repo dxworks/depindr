@@ -156,7 +156,7 @@ public class Depinder {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
-                    .filter(filesToRead::contains)
+                    .filter(path -> !path.toFile().getAbsolutePath().contains(".git"))
                     .map(path -> {
                         try {
                             DepinderFile depinderFile = DepinderFile.builder()
