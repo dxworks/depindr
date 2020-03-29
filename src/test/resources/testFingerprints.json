@@ -1,0 +1,90 @@
+{
+  "useProjectPrefix": true,
+  "technologies": [
+    {
+      "category": "External Libraries",
+      "name": "Mockito",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "org.mockito.AdditionalMatchers",
+        "org.mockito"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
+      "name": "Junit1",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "org.junit.runners"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "Japa Parser",
+      "name": "Japa Parser",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "japa.parser"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "Tiny Logger",
+      "name": "Tiny Logg",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "org.pmw.tinylog"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
+      "name": "Junit",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "org.junit.runners"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
+      "name": "Java Util",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "java.util"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
+      "name": "Lombok",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "lombok"
+      ],
+      "wrapAsImports": true
+    }
+  ]
+}

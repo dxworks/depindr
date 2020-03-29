@@ -46,10 +46,6 @@ public class Commit implements Entity<String> {
         return authorTimestamp;
     }
 
-    public Author getAuthor() {
-        return author;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,5 +57,13 @@ public class Commit implements Entity<String> {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public List<DepinderResult> getResults() {
+        return results;
+    }
+
+    public FileRegistry getFileRegistry() {
+        return fileRegistry;
     }
 }

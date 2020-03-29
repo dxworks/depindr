@@ -5,12 +5,10 @@ public interface DepinderConstants {
     String PROJECT_ID = "projectID";
     String BRANCH = "branch";
     String ROOT_FOLDER = "rootFolder";
-    String REMOVE_COMMENTS = "removeComments";
 
     String CONFIGURATION_FOLDER = "configuration";
     String RESULTS_FOLDER = "results";
     String JSON_FINGERPRINT_FILES = "dependecies";
-
 
     String CONFIGURATION_FILE = "depinder-conf.properties";
     String TECH_TO_SEARCH_FOR = "tech";

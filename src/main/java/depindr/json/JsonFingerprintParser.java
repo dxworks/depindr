@@ -1,15 +1,11 @@
 package depindr.json;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -26,23 +22,6 @@ public class JsonFingerprintParser {
         return configurationDTO.getTechnologies().stream()
                 .map(DependencyJsonDTO::toDependency)
                 .collect(Collectors.toList());
-    }
-
-
-    public void writeTechnologiesToFile(List<Dependency> technologies, Path filePath) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            FileWriter writer = new FileWriter(filePath.toFile());
-            List<DependencyJsonDTO> technologyJsonDTOS = technologies.stream().map(DependencyJsonDTO::fromDependency).collect(Collectors.toList());
-            JsonConfigurationDTO jsonConfigurationDTO = new JsonConfigurationDTO();
-            jsonConfigurationDTO.setTechnologies(technologyJsonDTOS);
-            gson.toJson(jsonConfigurationDTO, writer);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            log.error("Could not write JSON file!", e);
-            throw e;
-        }
     }
 
 

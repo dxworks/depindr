@@ -1,8 +1,18 @@
 package depindr.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import depindr.model.MixTechnologySnapshot;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class FileUtils {
 
     public static String removeComments(String fileContent) {
@@ -41,5 +51,19 @@ public class FileUtils {
         ret = String.valueOf(charArray);
 
         return ret;
+    }
+
+    //    public static void writeSnapshotsToFile(Set<TechnologySnapshot> snapshots, Path filePath) throws IOException {
+    public static void writeSnapshotsToFile(Collection<MixTechnologySnapshot> snapshots, Path filePath) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            FileWriter writer = new FileWriter(filePath.toFile());
+            gson.toJson(snapshots, writer);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            log.error("Could not write JSON file!", e);
+            throw e;
+        }
     }
 }
