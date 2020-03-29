@@ -38,9 +38,9 @@ public class Depinder {
 
     public void analyzeProject(String rootFolder, String branchName, boolean removeCommentsFlag) {
         //check if root folder is a git repository
-        GitClient gitClient = new GitClient();
+        GitClient gitClient = new GitClient(rootFolder);
 
-        gitClient.checkoutCommitForRepo(rootFolder, branchName);
+        gitClient.checkoutCommitForRepo(branchName);
 
         List<CommitDTO> allCommitNames = gitClient.getAllCommits(rootFolder);
 
@@ -56,7 +56,7 @@ public class Depinder {
             commit = commitRegistry.add(commit);
             commit.setFileRegistry(fileRegistry);
 
-            gitClient.checkoutCommitForRepo(rootFolder, commitDTO.getCommitID());
+            gitClient.checkoutCommitForRepo(commitDTO.getCommitID());
 
             List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().stream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
             List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, modifiedFilePaths, fileRegistry, removeCommentsFlag);

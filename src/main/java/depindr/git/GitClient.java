@@ -33,16 +33,25 @@ import java.util.stream.StreamSupport;
 @Slf4j
 public class GitClient {
 
+    private Git gitObject;
+
+    public GitClient(String rootFolder) {
+        try {
+            gitObject = Git.open(Paths.get(rootFolder, ".git").toFile());
+        } catch (IOException e) {
+            log.error("could not find repository " + rootFolder, e);
+            throw new NoSuchGitRepoException(rootFolder, e);
+        }
+    }
+
     public List<CommitDTO> getAllCommits(String repoPath) throws NoSuchGitRepoException {
         System.out.println("Commits from " + repoPath);
         try {
-            final Git git = getRepository(repoPath);
-
             return StreamSupport.stream(
-                    git.log()
+                    gitObject.log()
                             .call()
                             .spliterator(), true)
-                    .map(commit -> createCommitDTO(git.getRepository(), commit))
+                    .map(commit -> createCommitDTO(gitObject.getRepository(), commit))
                     .collect(Collectors.toList());
 
         } catch (GitAPIException e) {
@@ -58,20 +67,10 @@ public class GitClient {
         return date.toInstant().atZone(timeZone.toZoneId());
     }
 
-    private Git getRepository(String rootFolder) {
-        try {
-            return Git.open(Paths.get(rootFolder, ".git").toFile());
-        } catch (IOException e) {
-            log.error("could not find repository " + rootFolder, e);
-            throw new NoSuchGitRepoException(rootFolder, e);
-        }
-    }
 
-    public void checkoutCommitForRepo(String rootFolder, String commitName) {
-        Git git = getRepository(rootFolder);
-
+    public void checkoutCommitForRepo(String commitName) {
         try {
-            git.checkout().setName(commitName).call();
+            gitObject.checkout().setName(commitName).call();
         } catch (GitAPIException e) {
             log.error("Could not checkout commit " + commitName, e);
         }
@@ -100,7 +99,6 @@ public class GitClient {
                         .build())
                 .build();
     }
-
 
     private List<String> getCommitChangedFiles(Repository repository, RevCommit revCommit) {
         ObjectReader reader = repository.newObjectReader();
@@ -133,9 +131,8 @@ public class GitClient {
                 .collect(Collectors.toList());
     }
 
-
     public static class NoSuchGitRepoException extends RuntimeException {
-        public NoSuchGitRepoException(String rootFolder, Throwable cause) {
+        NoSuchGitRepoException(String rootFolder, Throwable cause) {
             super(rootFolder + " is not a git repository", cause);
         }
     }

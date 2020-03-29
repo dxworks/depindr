@@ -1,11 +1,18 @@
 package depindr;
 
+import depindr.analyzers.ValueOfTechForEachCommit;
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
+import depindr.exceptions.DepinderException;
+import depindr.model.TechnologySnapshot;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
+
+import static depindr.utils.FileUtils.writeSnapshotsToFile;
 
 /*
  * #DONE 0.Read configuration file
@@ -49,18 +56,18 @@ public class Main {
 //
 //        appearanceOfATechAnalyzer.whenDidATechAppear(depinder.getDependencyRegistry());
 
-//        ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
+        ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
 //
-//        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new));
+        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new));
 //
-//        Path filePath = Paths.get(resultsFolder.getName()+ "\\Evolution_Of_Tech_Results.json");
+        Path filePath = Paths.get(resultsFolder.getName() + "\\Evolution_Of_Tech_Results2.json");
 
 //        Path filePath = Paths.get(resultsFolder.getName()+ "\\File_Mix_Results.json");
-//        try {
-//            writeSnapshotsToFile(snapshots, filePath);
-//        } catch (IOException e) {
-//            throw new DepinderException("Could not write snapshots to file.", e);
-//        }
+        try {
+            writeSnapshotsToFile(snapshots, filePath);
+        } catch (IOException e) {
+            throw new DepinderException("Could not write snapshots to file.", e);
+        }
 
         System.out.println("gata");
 
