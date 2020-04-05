@@ -19,7 +19,7 @@ public class JsonFingerprintParser {
         if (configurationDTO == null)
             return Collections.emptyList();
 
-        return configurationDTO.getTechnologies().stream()
+        return configurationDTO.getTechnologies().parallelStream()
                 .map(DependencyJsonDTO::toDependency)
                 .collect(Collectors.toList());
     }

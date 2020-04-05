@@ -33,7 +33,7 @@ public class Dependency implements Entity<String> {
         this.languages = languages;
         this.extensions = extensions;
         this.fingerprints = fingerprints;
-        patterns = fingerprints.stream().map(Pattern::compile).collect(Collectors.toList());
+        patterns = fingerprints.parallelStream().map(Pattern::compile).collect(Collectors.toList());
     }
 
     public DepinderResult analyze(DepinderFile depinderFile) {
@@ -64,7 +64,7 @@ public class Dependency implements Entity<String> {
     }
 
     private boolean accepts(String extension) {
-        return languages.stream().anyMatch(language -> languageRegistry.isOfLanguage(language, extension))
+        return languages.parallelStream().anyMatch(language -> languageRegistry.isOfLanguage(language, extension))
                 || extensions.contains(extension);
     }
 
@@ -75,5 +75,9 @@ public class Dependency implements Entity<String> {
 
     public List<DepinderResult> getResults() {
         return depinderResults;
+    }
+
+    public void addResult(DepinderResult depinderResult) {
+        depinderResults.add(depinderResult);
     }
 }

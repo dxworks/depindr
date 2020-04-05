@@ -24,7 +24,7 @@ public class FileMixTechnologyAnalyzer {
             return MixTechFile.builder()
                     .fileName(depinderFile.getFullyQualifiedName())
                     .numberOfTechs((int) count)
-                    .techUsages(depinderFile.getResults().stream()
+                    .techUsages(depinderFile.getResults().parallelStream()
                             .map(this::transformDepindrResultToTechUsage).collect(Collectors.toList()))
                     .build();
         }
@@ -33,9 +33,9 @@ public class FileMixTechnologyAnalyzer {
     }
 
     public List<MixTechnologySnapshot> analzye(CommitRegistry commitRegistry, int threshold) {
-        return commitRegistry.getAll().stream()
+        return commitRegistry.getAll().parallelStream()
                 .map(commit -> {
-                    List<MixTechFile> mixTechFiles = commit.getFileRegistry().getAll().stream()
+                    List<MixTechFile> mixTechFiles = commit.getFileRegistry().getAll().parallelStream()
                             .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, threshold))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());

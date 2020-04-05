@@ -49,7 +49,7 @@ public class Main {
 //        //#TODO verify writeSnapshots still works after changing type of first param
 //        //#TODO test fileMixTech works and find a way to run this with command line args
 //
-//        List<MixTechnologySnapshot> snapshots = fileMixTechnologyAnalyzer.analzye(depinder.getCommitRegistry(), 2);
+//        List<MixTechnologySnapshot> snapshots = fileMixTechnologyAnalyzer.analyze(depinder.getCommitRegistry(), 2);
 
 
 //        AppearanceOfATechAnalyzer appearanceOfATechAnalyzer = new AppearanceOfATechAnalyzer();
@@ -57,9 +57,9 @@ public class Main {
 //        appearanceOfATechAnalyzer.whenDidATechAppear(depinder.getDependencyRegistry());
 
         ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
-//
-        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new));
-//
+
+        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new), depinder.getCommitRegistry());
+
         Path filePath = Paths.get(resultsFolder.getName() + "\\Evolution_Of_Tech_Results2.json");
 
 //        Path filePath = Paths.get(resultsFolder.getName()+ "\\File_Mix_Results.json");

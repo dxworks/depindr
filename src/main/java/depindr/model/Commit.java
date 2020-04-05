@@ -66,4 +66,8 @@ public class Commit implements Entity<String> {
     public FileRegistry getFileRegistry() {
         return fileRegistry;
     }
+
+    public void addResults(List<DepinderResult> newResults) {
+        results.addAll(newResults);
+    }
 }

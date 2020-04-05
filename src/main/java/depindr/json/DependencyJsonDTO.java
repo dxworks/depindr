@@ -28,7 +28,7 @@ public class DependencyJsonDTO {
 
         AtomicBoolean shouldWrapAsImports = new AtomicBoolean(false);
 
-        List<String> fingerPrints = technology.getFingerprints().stream().map(fingerPrint -> {
+        List<String> fingerPrints = technology.getFingerprints().parallelStream().map(fingerPrint -> {
             if (fingerPrint.contains(ImportUtils.IMPORT_SUFFIX)) {
                 shouldWrapAsImports.set(true);
                 return ImportUtils.unwrapImportPackage(fingerPrint);
@@ -52,7 +52,7 @@ public class DependencyJsonDTO {
     }
 
     private List<String> fingerprintsWrappedAsImports() {
-        return fingerprints.stream().map(ImportUtils::wrapImportPackage).collect(Collectors.toList());
+        return fingerprints.parallelStream().map(ImportUtils::wrapImportPackage).collect(Collectors.toList());
     }
 
 }

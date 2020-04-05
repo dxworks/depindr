@@ -7,7 +7,7 @@ public class CommitRegistry extends AbstractRegistry<Commit, String> {
 
 
     public Optional<Commit> getLastCommit() {
-        return getAll().stream().max(Comparator.comparing(Commit::getAuthorTimestamp));
+        return getAll().parallelStream().max(Comparator.comparing(Commit::getAuthorTimestamp));
     }
 
 }

@@ -14,7 +14,7 @@ public class SpreadnessOfATechAnalyzer {
     public static void technologyWithinFiles(CommitRegistry commitRegistry, DependencyRegistry dependencyRegistry, String tech) {
         Commit lastCommit = commitRegistry.getLastCommit().get();
         dependencyRegistry.getAll().forEach(dependency -> {
-            List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
+            List<String> filesWithCertainTech = dependency.getDepinderResults().parallelStream()
                     .filter(depinderResult -> depinderResult.getCommit().equals(lastCommit))
                     .map(DepinderResult::getDepinderFile)
                     .map(DepinderFile::getName)

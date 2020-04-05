@@ -23,10 +23,7 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -34,6 +31,7 @@ import java.util.stream.StreamSupport;
 public class GitClient {
 
     private Git gitObject;
+    private int commitNumber = 0;
 
     public GitClient(String rootFolder) {
         try {
@@ -70,6 +68,7 @@ public class GitClient {
 
     public void checkoutCommitForRepo(String commitName) {
         try {
+            System.out.format("Commit no: %d\n", commitNumber++);
             gitObject.checkout().setName(commitName).call();
         } catch (GitAPIException e) {
             log.error("Could not checkout commit " + commitName, e);
@@ -77,6 +76,9 @@ public class GitClient {
     }
 
     private CommitDTO createCommitDTO(Repository repository, RevCommit commit) {
+        List<String> modifiedFiles = new ArrayList<>();
+        List<String> deletedFiles = new ArrayList<>();
+        getCommitChangedFiles(repository, commit, modifiedFiles, deletedFiles);
         return CommitDTO.builder()
                 .author(AuthorDTO.builder()
                         .name(commit.getAuthorIdent().getName())
@@ -92,7 +94,8 @@ public class GitClient {
                 .parentIDs(Arrays.stream(commit.getParents())
                         .map(AnyObjectId::name)
                         .toArray(String[]::new))
-                .modifiedFiles(getCommitChangedFiles(repository, commit))
+                .modifiedFiles(modifiedFiles)
+                .deletedFiles(deletedFiles)
                 .message(CommitMessageDTO.builder()
                         .fullDescription(commit.getFullMessage())
                         .shortDescription(commit.getShortMessage())
@@ -100,7 +103,7 @@ public class GitClient {
                 .build();
     }
 
-    private List<String> getCommitChangedFiles(Repository repository, RevCommit revCommit) {
+    private void getCommitChangedFiles(Repository repository, RevCommit revCommit, List<String> modifiedFiles, List<String> deletedFiles) {
         ObjectReader reader = repository.newObjectReader();
         AbstractTreeIterator parentTreeIterator = new CanonicalTreeParser();
         CanonicalTreeParser currentCommitTreeIterator = new CanonicalTreeParser();
@@ -126,9 +129,14 @@ public class GitClient {
             e.printStackTrace();
         }
 
-        return CollectionUtils.emptyIfNull(diffs).stream()
+        modifiedFiles.addAll(CollectionUtils.emptyIfNull(diffs).stream()
                 .map(diff -> diff.getNewPath().equals("/dev/null") ? diff.getOldPath() : diff.getNewPath())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        deletedFiles.addAll(CollectionUtils.emptyIfNull(diffs).stream()
+                .filter(diff -> diff.getNewPath().equals("/dev/null"))
+                .map(DiffEntry::getOldPath)
+                .collect(Collectors.toList()));
     }
 
     public static class NoSuchGitRepoException extends RuntimeException {

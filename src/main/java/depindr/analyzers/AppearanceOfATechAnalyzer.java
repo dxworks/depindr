@@ -12,11 +12,11 @@ public class AppearanceOfATechAnalyzer {
 
     public void whenDidATechAppear(DependencyRegistry dependencyRegistry) {
         dependencyRegistry.getAll().forEach(dependency -> {
-            List<Commit> commits = dependency.getDepinderResults().stream()
+            List<Commit> commits = dependency.getDepinderResults().parallelStream()
                     .map(DepinderResult::getCommit)
                     .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
                     .collect(Collectors.toList());
-            commits.stream().findFirst().ifPresent(commit ->
+            commits.parallelStream().findFirst().ifPresent(commit ->
                     System.out.printf("Dependency %s appeared in commit %s on %s%n", dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString())
             );
         });
