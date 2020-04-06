@@ -58,7 +58,7 @@ public class Main {
 
         ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
 
-        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new), depinder.getCommitRegistry());
+        Set<TechnologySnapshot> snapshots = dependencyEvolutionAnalyzer.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new));
 
         Path filePath = Paths.get(resultsFolder.getName() + "\\Evolution_Of_Tech_Results2.json");
 

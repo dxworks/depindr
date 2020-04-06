@@ -3,7 +3,6 @@ package depindr.analyzers;
 import depindr.DepinderResult;
 import depindr.json.Dependency;
 import depindr.model.Commit;
-import depindr.model.CommitRegistry;
 import depindr.model.TechnologySnapshot;
 
 import java.util.Comparator;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class ValueOfTechForEachCommit {
 
-    public Set<TechnologySnapshot> dependencyValueForCommits(Dependency dependency, CommitRegistry commitRegistry) {
+    public Set<TechnologySnapshot> dependencyValueForCommits(Dependency dependency) {
         Map<Commit, List<DepinderResult>> resultsByCommitId = dependency.getResults().parallelStream()
                 .collect(Collectors.groupingBy(DepinderResult::getCommit));
 
