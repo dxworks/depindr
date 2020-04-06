@@ -93,23 +93,30 @@ public class Depinder {
 
                 newResults.stream()
                         .map(res -> DepinderResult.builder()
+                                .name(res.getName())
                                 .file(res.getFile())
-                                .dependency(res.getDependency())
                                 .category(res.getCategory())
                                 .value(res.getValue())
                                 .fingerprintMatches(res.getFingerprintMatches())
                                 .author(authorRegistry.getById(new AuthorID(commitDTO.getAuthor().getName(), commitDTO.getAuthor().getEmail())).get())
                                 .commit(currentCommit)
-                                .depinderFile(currentCommit.getFileRegistry().getById(res.getFile()).orElse(null))
+                                .dependency(res.getDependency())
+                                .depinderFile(getDepinderFileAndAddItToCurrentCommit(res, currentCommit))
                                 .build())
                         .forEach(depinderResult -> {
                             depinderResult.getAuthor().addResult(depinderResult);
 //                            depinderResult.getDepinderFile().addResult(depinderResult);
                             depinderResult.getDependency().addResult(depinderResult);
+                            currentCommit.addResult(depinderResult);
                         });
             }
 
         }
+    }
+
+    private DepinderFile getDepinderFileAndAddItToCurrentCommit(DepinderResult res, Commit currentCommit) {
+        currentCommit.getFileRegistry().add(res.getDepinderFile());
+        return res.getDepinderFile();
     }
 
     private List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry, boolean flag, List<Path> modifiedFilePaths) {

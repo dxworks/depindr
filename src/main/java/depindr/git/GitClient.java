@@ -134,8 +134,9 @@ public class GitClient {
                 .collect(Collectors.toList()));
 
         deletedFiles.addAll(CollectionUtils.emptyIfNull(diffs).stream()
-                .filter(diff -> diff.getNewPath().equals("/dev/null"))
+                .filter(diff -> !diff.getNewPath().equals(diff.getOldPath()))
                 .map(DiffEntry::getOldPath)
+                .filter(path -> !path.equals("/dev/null"))
                 .collect(Collectors.toList()));
     }
 

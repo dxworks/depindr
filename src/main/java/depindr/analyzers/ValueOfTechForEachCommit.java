@@ -6,6 +6,7 @@ import depindr.model.Commit;
 import depindr.model.CommitRegistry;
 import depindr.model.TechnologySnapshot;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,8 @@ public class ValueOfTechForEachCommit {
         Map<Commit, List<DepinderResult>> resultsByCommitId = dependency.getResults().parallelStream()
                 .collect(Collectors.groupingBy(DepinderResult::getCommit));
 
-        return resultsByCommitId.entrySet().parallelStream()
+        return resultsByCommitId.entrySet().stream()
+                .sorted(Comparator.comparing(commitListEntry -> commitListEntry.getKey().getAuthorTimestamp()))
                 .map(entry -> {
                     int count = entry.getValue().size();
                     System.out.printf("Commit: %s technology %s is spread in %d  files \n", entry.getKey().getID(), dependency.getName(), count);
