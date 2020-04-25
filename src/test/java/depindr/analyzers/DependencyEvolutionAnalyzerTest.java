@@ -12,7 +12,7 @@ import org.junit.Test;
 public class DependencyEvolutionAnalyzerTest {
 
     private static final String ROOT_FOLDER = "C:\\Users\\Bogdan\\Desktop\\Java_Project\\javacomplete";
-    private ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
+//    private ValueOfTechForEachCommit dependencyEvolutionAnalyzer = new ValueOfTechForEachCommit();
 
     // steps. Create a test, run Depindr on the test repository, get the results and serialize them into a JSON file.
     // Add the json file to test/resources.

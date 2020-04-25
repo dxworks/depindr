@@ -28,7 +28,7 @@
     },
     {
       "category": "Japa Parser",
-      "name": "Japa Parser",
+      "name": "Japa_Parser",
       "languages": [
         "java"
       ],
@@ -40,7 +40,7 @@
     },
     {
       "category": "Tiny Logger",
-      "name": "Tiny Logg",
+      "name": "Tiny_Logg",
       "languages": [
         "java"
       ],
@@ -64,7 +64,7 @@
     },
     {
       "category": "External Libraries",
-      "name": "Java Util",
+      "name": "Java_Util",
       "languages": [
         "java"
       ],

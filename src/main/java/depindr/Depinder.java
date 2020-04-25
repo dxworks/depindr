@@ -59,6 +59,7 @@ public class Depinder {
             gitClient.checkoutCommitForRepo(commitDTO.getCommitID());
 
             List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().stream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
+
             List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, modifiedFilePaths, fileRegistry, removeCommentsFlag);
             for (Dependency dependency : dependencyRegistry.getAll()) {
                 for (DepinderFile depinderFile : depinderFiles) {
@@ -113,10 +114,8 @@ public class Depinder {
     }
 
     private List<Dependency> readDependencyFingerprints(String dependencyJsonFile) {
-        String dependencyFile = dependencyJsonFile;
-
         JsonFingerprintParser jsonFingerprintParser = new JsonFingerprintParser();
-        return jsonFingerprintParser.parseTechnologiesFile(dependencyFile);
+        return jsonFingerprintParser.parseTechnologiesFile(dependencyJsonFile);
     }
 
     public DependencyRegistry getDependencyRegistry() {

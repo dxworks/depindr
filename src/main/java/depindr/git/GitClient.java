@@ -34,6 +34,7 @@ import java.util.stream.StreamSupport;
 public class GitClient {
 
     private Git gitObject;
+    private int commitNumber = 0;
 
     public GitClient(String rootFolder) {
         try {
@@ -70,6 +71,7 @@ public class GitClient {
 
     public void checkoutCommitForRepo(String commitName) {
         try {
+            System.out.format("Commit no: %d\n", commitNumber++);
             gitObject.checkout().setName(commitName).call();
         } catch (GitAPIException e) {
             log.error("Could not checkout commit " + commitName, e);

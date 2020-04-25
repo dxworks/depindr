@@ -43,8 +43,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.12</version>
+            <scope>provided</scope>
         </dependency>
+
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -58,12 +60,14 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

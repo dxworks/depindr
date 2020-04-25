@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Class-Path: org.eclipse.jgit-5.6.0.201912101111-r.jar jzlib-1.1.1.jar 
+ slf4j-api-1.7.2.jar jsch-0.1.55.jar commons-collections4-4.4.jar lomb
+ ok-1.18.10.jar gson-2.8.6.jar JavaEWAH-1.1.6.jar commons-io-2.6.jar b
+ cprov-jdk15on-1.64.jar bcpg-jdk15on-1.64.jar bcpkix-jdk15on-1.64.jar 
+ annotations-19.0.0.jar logback-classic-1.2.3.jar logback-core-1.2.3.j
+ ar
+Main-Class: depindr.Main
+
