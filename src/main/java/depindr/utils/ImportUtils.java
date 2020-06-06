@@ -8,14 +8,4 @@ public class ImportUtils {
         return "(" + _import.replace(".", "\\.") + ")" + IMPORT_SUFFIX;
     }
 
-    public static String unwrapImportPackage(String wrappedImport) {
-        int index = wrappedImport.indexOf(IMPORT_SUFFIX);
-        if (index == -1)
-            return wrappedImport;
-
-        String _import = wrappedImport.substring(1, index - 1);
-        _import = _import.replace("\\", "");
-
-        return _import;
-    }
 }

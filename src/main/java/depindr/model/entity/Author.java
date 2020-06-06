@@ -1,16 +1,17 @@
-package depindr.model;
+package depindr.model.entity;
 
 import depindr.DepinderResult;
 import depindr.model.dto.AuthorDTO;
+import depindr.model.dto.AuthorID;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Author implements Entity<AuthorID> {
 
-    private AuthorID authorID;
+    private final AuthorID authorID;
 
-    private List<DepinderResult> results = new ArrayList<>();
+    private final List<DepinderResult> results = new ArrayList<>();
 
     public Author(AuthorID authorID) {
         this.authorID = authorID;

@@ -18,12 +18,10 @@ import static depindr.analyzers.DepinderCommand.*;
 
 public class Main {
 
-    private static HelpCommand helpCommand = new HelpCommand();
-    private static VersionCommand versionCommand = new VersionCommand();
+    private static final HelpCommand helpCommand = new HelpCommand();
+    private static final VersionCommand versionCommand = new VersionCommand();
 
     public static void main(String[] args) {
-        //#todo maybe this should be transmitted in the future as a param to main
-
 
         if (args == null) {
             System.err.println("Arguments cannot be null");
@@ -37,11 +35,13 @@ public class Main {
         }
 
         if (versionCommand.parse(args)) {
+            System.out.println("Chose version command\n");
             versionCommand.execute(null, args);
             return;
         }
 
         if (helpCommand.parse(args)) {
+            System.out.println("Chose help command\n");
             helpCommand.execute(null, args);
             return;
         }
@@ -51,7 +51,7 @@ public class Main {
         DepinderCommand depinderCommand = getDepinderCommand(command);
 
         if (depinderCommand == null) {
-            System.err.println("Invalid command!");
+            System.err.println("depinderCommand == null!!!\nInvalid command!\n");
             helpCommand.execute(null, args);
             return;
         }
@@ -65,6 +65,7 @@ public class Main {
 
         File resultsFolder = new File(DepinderConstants.RESULTS_FOLDER);
         if (!resultsFolder.exists())
+            //noinspection ResultOfMethodCallIgnored
             resultsFolder.mkdirs();
         String rootFolderOfAnalyzedProject = readDepinderConfiguration();
         String branchName = DepinderConfiguration.getInstance().getProperty(DepinderConstants.BRANCH);
@@ -74,35 +75,6 @@ public class Main {
 
         depinderCommand.execute(depinder, args);
 
-
-//        switch (command) {
-//            case "--help":
-//                System.out.println("Usage:" );
-//                break;
-//            case "--appearance":
-//                AppearanceOfATechAnalyzer appearanceOfATechAnalyzer = new AppearanceOfATechAnalyzer();
-//                appearanceOfATechAnalyzer.whenDidATechAppear(depinder.getDependencyRegistry());
-//                break;
-//            case "--spread": //at all commits
-//                SpreadOfATechAnalyzer spreadOfATechAnalyzer = new SpreadOfATechAnalyzer();
-//                spreadOfATechAnalyzer.technologyWithinFiles(depinder.getCommitRegistry(), depinder.getDependencyRegistry(), "Java Util");
-//                break;
-//            case "--mix":
-//                FileMixTechnologyAnalyzer fileMixTechnologyAnalyzer = new FileMixTechnologyAnalyzer();
-//                List<MixTechnologySnapshot> snapshots = fileMixTechnologyAnalyzer.analyze(depinder.getCommitRegistry(), 1);
-//                Path filePath = Paths.get(resultsFolder.getName()+ "\\File_Mix_Results.json");
-//                try {
-//                    writeSnapshotsToFile(snapshots, filePath);
-//                } catch (IOException e) {
-//                    throw new DepinderException("Could not write snapshots to file.", e);
-//                }
-//            case "--evolution":
-//                ValueOfTechForEachCommit valueOfTechForEachCommit = new ValueOfTechForEachCommit();
-//                valueOfTechForEachCommit.dependencyValueForCommits(depinder.getDependencyRegistry().getById(String.join(", ", "Java Util", "External Libraries")).orElseThrow(IllegalArgumentException::new));
-//            case "DUMMY_COMMAND":
-//                System.out.println("Dummy Command read\n");
-//                break;
-//        }
         System.out.println("DepindR finished analysis.");
 
     }
@@ -123,8 +95,6 @@ public class Main {
                 return new SpreadOfATechAnalyzer();
             case MIX:
                 return new FileMixTechnologyAnalyzer();
-//            case EVOLUTION:
-//                return new ValueOfTechForEachCommit();
             default:
                 return null;
         }

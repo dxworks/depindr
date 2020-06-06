@@ -2,8 +2,8 @@ package depindr.json;
 
 import depindr.DepinderFile;
 import depindr.DepinderResult;
-import depindr.model.Entity;
-import depindr.model.FingerprintMatch;
+import depindr.model.dto.FingerprintMatch;
+import depindr.model.entity.Entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -75,5 +75,9 @@ public class Dependency implements Entity<String> {
 
     public List<DepinderResult> getResults() {
         return depinderResults;
+    }
+
+    public void addResult(DepinderResult depinderResult) {
+        depinderResults.add(depinderResult);
     }
 }

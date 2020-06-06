@@ -2,7 +2,7 @@ package depindr.analyzers;
 
 import depindr.Depinder;
 import depindr.DepinderResult;
-import depindr.model.Commit;
+import depindr.model.entity.Commit;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +17,8 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
                     .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
                     .collect(Collectors.toList());
             commits.stream().findFirst().ifPresent(commit ->
-                    System.out.printf("Dependency %s appeared in commit %s on %s%n", dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString())
+                    System.out.printf("Dependency %s appeared in commit %s on %s%n authored by %s\n",
+                            dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString(), commit.getAuthor().getID().getName())
             );
         });
     }

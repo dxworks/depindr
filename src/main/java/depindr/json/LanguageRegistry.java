@@ -10,8 +10,8 @@ import java.util.*;
 public class LanguageRegistry {
 
     public static final String LANGUAGES_TO_EXTENSIONS_CONFIG_FILE_NAME = "languageToExtensions.properties";
-    private static LanguageRegistry _instance = new LanguageRegistry();
-    private Map<String, List<String>> languagesToExtensionsMap = new HashMap<>();
+    private static final LanguageRegistry _instance = new LanguageRegistry();
+    private final Map<String, List<String>> languagesToExtensionsMap = new HashMap<>();
 
     private LanguageRegistry() {
         loadLanguagesToExtensionsFromConfigurationFile();

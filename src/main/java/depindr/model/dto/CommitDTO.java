@@ -19,4 +19,11 @@ public class CommitDTO {
     private CommitMessageDTO message;
     private String[] parentIDs;
     private List<String> modifiedFiles;
+    private List<String> deletedFiles;
+
+    public String getFirstParentID() {
+        if (parentIDs.length > 0)
+            return parentIDs[0];
+        return "";
+    }
 }

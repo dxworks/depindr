@@ -1,4 +1,4 @@
-package depindr.model;
+package depindr.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

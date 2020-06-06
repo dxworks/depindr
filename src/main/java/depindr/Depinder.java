@@ -4,8 +4,9 @@ import depindr.exceptions.DepinderException;
 import depindr.git.GitClient;
 import depindr.json.Dependency;
 import depindr.json.JsonFingerprintParser;
-import depindr.model.*;
+import depindr.model.dto.AuthorID;
 import depindr.model.dto.CommitDTO;
+import depindr.model.entity.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -14,8 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.removeComments;
@@ -42,7 +42,7 @@ public class Depinder {
 
         gitClient.checkoutCommitForRepo(branchName);
 
-        List<CommitDTO> allCommitNames = gitClient.getAllCommits(rootFolder);
+        List<CommitDTO> allCommitNames = gitClient.getAllCommits(rootFolder).stream().sorted(Comparator.comparing(CommitDTO::getAuthorTimestamp)).collect(Collectors.toList());
 
         //checkout each commit, read files, match fingerprints, create models.
         for (CommitDTO commitDTO : allCommitNames) {
@@ -58,9 +58,12 @@ public class Depinder {
 
             gitClient.checkoutCommitForRepo(commitDTO.getCommitID());
 
-            List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().stream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
+            List<Path> modifiedFilePaths = commitDTO.getModifiedFiles().parallelStream().map(s -> Paths.get(rootFolder, s)).collect(Collectors.toList());
+            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, fileRegistry, removeCommentsFlag, modifiedFilePaths);
 
-            List<DepinderFile> depinderFiles = readFilesFromRepo(rootFolder, modifiedFilePaths, fileRegistry, removeCommentsFlag);
+            Set<String> deletedFiles = modifiedFilePaths.stream().map(path -> path.toAbsolutePath().toString()).collect(Collectors.toSet());
+            deletedFiles.removeAll(depinderFiles.stream().map(DepinderFile::getPath).collect(Collectors.toSet()));
+
             for (Dependency dependency : dependencyRegistry.getAll()) {
                 for (DepinderFile depinderFile : depinderFiles) {
                     DepinderResult depinderResult = dependency.analyze(depinderFile);
@@ -74,14 +77,55 @@ public class Depinder {
             }
 
             fileRegistry.getAll().forEach(depinderFile -> depinderFile.setContent(null));
+
+        }
+
+        for (CommitDTO commitDTO : allCommitNames) {
+            List<String> deletedFiles = commitDTO.getDeletedFiles();
+            Optional<Commit> parentCommitOptional = commitRegistry.getById(commitDTO.getFirstParentID());
+            Commit currentCommit = commitRegistry.getById(commitDTO.getCommitID()).get();
+            if (parentCommitOptional.isPresent()) {
+                List<DepinderResult> parentCommitResults = parentCommitOptional.get().getResults();
+                List<DepinderResult> newResults = parentCommitResults.stream()
+                        .filter(depinderResult -> !deletedFiles.contains(depinderResult.getDepinderFile().getPath()))
+                        .filter(depinderResult -> currentCommit.getResults().stream()
+                                .noneMatch(dr -> depinderResult.getFile().equals(dr.getFile()) && depinderResult.getName().equals(dr.getName())
+                                        && depinderResult.getCategory().equals(dr.getCategory()))).collect(Collectors.toList());
+
+                newResults.stream()
+                        .map(res -> DepinderResult.builder()
+                                .name(res.getName())
+                                .file(res.getFile())
+                                .category(res.getCategory())
+                                .value(res.getValue())
+                                .fingerprintMatches(res.getFingerprintMatches())
+                                .author(authorRegistry.getById(new AuthorID(commitDTO.getAuthor().getName(), commitDTO.getAuthor().getEmail())).get())
+                                .commit(currentCommit)
+                                .dependency(res.getDependency())
+                                .depinderFile(getDepinderFileAndAddItToCurrentCommit(res, currentCommit))
+                                .build())
+                        .forEach(depinderResult -> {
+                            depinderResult.getAuthor().addResult(depinderResult);
+//                            depinderResult.getDepinderFile().addResult(depinderResult);
+                            depinderResult.getDependency().addResult(depinderResult);
+                            currentCommit.addResult(depinderResult);
+                        });
+            }
+
         }
     }
 
-    private List<DepinderFile> readFilesFromRepo(String rootFolder, List<Path> filesToRead, FileRegistry fileRegistry, boolean flag) {
+    private DepinderFile getDepinderFileAndAddItToCurrentCommit(DepinderResult res, Commit currentCommit) {
+        currentCommit.getFileRegistry().add(res.getDepinderFile());
+        return res.getDepinderFile();
+    }
+
+    private List<DepinderFile> readFilesFromRepo(String rootFolder, FileRegistry fileRegistry, boolean flag, List<Path> modifiedFilePaths) {
         try {
             return Files.walk(Paths.get(rootFolder))
                     .filter(Files::isRegularFile)
                     .filter(path -> !path.toFile().getAbsolutePath().contains(".git"))
+                    .filter(modifiedFilePaths::contains)
                     .map(path -> {
                         try {
                             DepinderFile depinderFile = DepinderFile.builder()

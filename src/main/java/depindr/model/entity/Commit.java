@@ -1,4 +1,4 @@
-package depindr.model;
+package depindr.model.entity;
 
 import depindr.DepinderResult;
 import depindr.model.dto.CommitDTO;
@@ -13,7 +13,7 @@ public class Commit implements Entity<String> {
     private String id;
     private Author author;
     private ZonedDateTime authorTimestamp;
-    private List<DepinderResult> results = new ArrayList<>();
+    private final List<DepinderResult> results = new ArrayList<>();
 
     private FileRegistry fileRegistry;
 
@@ -65,5 +65,9 @@ public class Commit implements Entity<String> {
 
     public FileRegistry getFileRegistry() {
         return fileRegistry;
+    }
+
+    public Author getAuthor() {
+        return author;
     }
 }

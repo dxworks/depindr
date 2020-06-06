@@ -14,23 +14,22 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
     public void execute(Depinder depinder, String[] args) {
         String tech = args[2];
         AtomicInteger commitIndex = new AtomicInteger(1);
-        depinder.getCommitRegistry().getAll().forEach(commit -> {
-            depinder.getDependencyRegistry().getAll().forEach(dependency -> {
-                List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
-                        .filter(depinderResult -> depinderResult.getCommit().equals(commit))
-                        .map(DepinderResult::getDepinderFile)
-                        .map(DepinderFile::getName)
-                        .filter(s -> dependency.getName().equals(tech))
-                        .collect(Collectors.toList());
+        depinder.getCommitRegistry().getAll().forEach(commit -> depinder.getDependencyRegistry().getAll().forEach(dependency -> {
+            List<String> filesWithCertainTech = dependency.getDepinderResults().stream()
+                    .filter(depinderResult -> depinderResult.getCommit().equals(commit))
+                    .map(DepinderResult::getDepinderFile)
+                    .map(DepinderFile::getName)
+                    .filter(s -> dependency.getName().equals(tech))
+                    .collect(Collectors.toList());
 
-                if (!filesWithCertainTech.isEmpty()) {
-                    System.out.println("Commit no: " + commitIndex.getAndIncrement());
-                    System.out.printf("Technology %s is spread in %d files \n", dependency.getName(), filesWithCertainTech.size());
-                    System.out.printf("%s: has %s \n", dependency.getName(), filesWithCertainTech.toString());
-                }
+            if (!filesWithCertainTech.isEmpty()) {
+                System.out.println("\nCommit no: " + commitIndex.getAndIncrement());
+                System.out.println("Commit id: " + commit.getID());
+                System.out.printf("Technology %s is spread in %d files \n", dependency.getName(), filesWithCertainTech.size());
+                System.out.printf("%s: has %s \n\n\n", dependency.getName(), filesWithCertainTech.toString());
+            }
 
-            });
-        });
+        }));
 
     }
 

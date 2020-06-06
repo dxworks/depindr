@@ -2,8 +2,8 @@ package depindr;
 
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
-import depindr.model.Entity;
-import depindr.model.FingerprintMatch;
+import depindr.model.dto.FingerprintMatch;
+import depindr.model.entity.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

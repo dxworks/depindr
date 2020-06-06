@@ -9,10 +9,11 @@ import java.util.Properties;
 
 //singletoning at it's finest
 public class DepinderConfiguration {
-    private static DepinderConfiguration instance = new DepinderConfiguration();
-    private Properties properties = new Properties();
+    private static final DepinderConfiguration instance = new DepinderConfiguration();
+    private final Properties properties = new Properties();
 
-    private DepinderConfiguration() {}
+    private DepinderConfiguration() {
+    }
 
     public static DepinderConfiguration getInstance() {
         return instance;

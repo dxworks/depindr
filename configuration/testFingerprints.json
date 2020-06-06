@@ -76,6 +76,19 @@
     },
     {
       "category": "External Libraries",
+      "name": "Input_Output",
+      "languages": [
+        "java"
+      ],
+      "extensions": [],
+      "fingerprints": [
+        "java.io",
+        "java.nio"
+      ],
+      "wrapAsImports": true
+    },
+    {
+      "category": "External Libraries",
       "name": "Lombok",
       "languages": [
         "java"

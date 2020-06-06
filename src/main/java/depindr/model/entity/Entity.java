@@ -1,4 +1,4 @@
-package depindr.model;
+package depindr.model.entity;
 
 public interface Entity<ID> {
     ID getID();

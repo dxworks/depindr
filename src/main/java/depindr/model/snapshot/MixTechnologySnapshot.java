@@ -1,17 +1,19 @@
-package depindr.model;
+package depindr.model.snapshot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class TechnologySnapshot {
+public class MixTechnologySnapshot {
     private ZonedDateTime snapshotTimestamp;
-    private int numberOfFiles;
-    private int usageOfTechnology;
     private String commitID;
+    private List<MixTechFile> files;
 }

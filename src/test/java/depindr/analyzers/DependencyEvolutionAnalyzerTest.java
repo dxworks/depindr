@@ -4,7 +4,7 @@ import depindr.Depinder;
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
 import depindr.json.Dependency;
-import depindr.model.DependencyRegistry;
+import depindr.model.entity.DependencyRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

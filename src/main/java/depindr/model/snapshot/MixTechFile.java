@@ -1,4 +1,4 @@
-package depindr.model;
+package depindr.model.snapshot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

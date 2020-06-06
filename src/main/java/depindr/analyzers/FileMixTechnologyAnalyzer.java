@@ -4,9 +4,9 @@ import depindr.Depinder;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
 import depindr.exceptions.DepinderException;
-import depindr.model.MixTechFile;
-import depindr.model.MixTechnologySnapshot;
-import depindr.model.TechUsage;
+import depindr.model.snapshot.MixTechFile;
+import depindr.model.snapshot.MixTechnologySnapshot;
+import depindr.model.snapshot.TechUsage;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,11 +29,6 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
                             .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, threshold))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
-
-                    System.out.println("Commit: " + commit.getID());
-                    for (MixTechFile file : mixTechFiles) {
-                        System.out.println("FILE: " + file.getFileName());
-                    }
 
                     return MixTechnologySnapshot.builder()
                             .commitID(commit.getID())

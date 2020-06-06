@@ -1,4 +1,4 @@
-package depindr.model;
+package depindr.model.entity;
 
 import depindr.DepinderFile;
 

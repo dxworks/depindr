@@ -16,7 +16,7 @@ public class HelpCommand implements DepinderCommand {
 
     public void execute(Depinder depinder, String[] args) {
         String usage = "Depinder  -  usage guide:\n";
-        usage += "Configure the source root and the project id in the config/depinder-conf.properties file\n\n";
+        usage += "Configure the source root and the project id in the configuration/depinder-conf.properties file\n\n";
 
         usage += "This is a list of the commands:\n";
 
@@ -31,7 +31,7 @@ public class HelpCommand implements DepinderCommand {
                 .map(s -> "\t" + s)
                 .collect(Collectors.joining("\n"));
 
-        usage += "\n\nPlease run insider with the specified commands from the folder you have installed DepindR to!\n";
+        usage += "\n\nPlease run depinder with the specified commands from the folder you have installed DepindR to!\n";
 
         System.out.println(usage);
     }

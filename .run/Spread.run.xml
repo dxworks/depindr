@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="Spread" type="Application" factoryName="Application">
+    <configuration default="false" name="Spread_IO" type="Application" factoryName="Application">
         <option name="MAIN_CLASS_NAME" value="depindr.Main"/>
         <module name="depinder"/>
-        <option name="PROGRAM_PARAMETERS" value="--spread json_name Java_Util false"/>
+        <option name="PROGRAM_PARAMETERS" value="--spread json_name Input_Output false"/>
         <option name="VM_PARAMETERS" value="-Xmx6g"/>
         <extension name="coverage">
             <pattern>

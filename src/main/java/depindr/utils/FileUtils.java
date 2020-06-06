@@ -2,8 +2,8 @@ package depindr.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import depindr.model.MixTechnologySnapshot;
-import depindr.model.TechnologySnapshot;
+import depindr.model.snapshot.MixTechnologySnapshot;
+import depindr.model.snapshot.TechnologySnapshot;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileWriter;
@@ -20,7 +20,7 @@ public class FileUtils {
     public static String removeComments(String fileContent) {
         String ret = fileContent;
 
-        Pattern p = Pattern.compile("(\\/\\*([\\S\\s]+?)\\*\\/)");
+        Pattern p = Pattern.compile("(/\\*([\\S\\s]+?)\\*/)");
         Matcher m = p.matcher(ret);
 
         char[] charArray = ret.toCharArray();
@@ -36,7 +36,7 @@ public class FileUtils {
 
         ret = String.valueOf(charArray);
 
-        p = Pattern.compile("(?:\\/\\/.*)");
+        p = Pattern.compile("(?://.*)");
         m = p.matcher(ret);
 
         charArray = ret.toCharArray();
