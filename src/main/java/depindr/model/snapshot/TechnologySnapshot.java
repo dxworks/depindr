@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @Builder
-public class TechnologySnapshot {
-    private ZonedDateTime snapshotTimestamp;
+public class TechnologySnapshot implements Snapshot {
+    private String snapshotTimestamp;
     private int numberOfFiles;
-    private int usageOfTechnology;
+    private int value;
+    private List<String> files;
     private String commitID;
+    private String techId;
 }

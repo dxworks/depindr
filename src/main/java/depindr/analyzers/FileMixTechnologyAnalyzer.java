@@ -6,6 +6,7 @@ import depindr.DepinderResult;
 import depindr.exceptions.DepinderException;
 import depindr.model.snapshot.MixTechFile;
 import depindr.model.snapshot.MixTechnologySnapshot;
+import depindr.model.snapshot.Snapshot;
 import depindr.model.snapshot.TechUsage;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
 
         int threshold = Integer.parseInt(args[1]);
 
-        List<MixTechnologySnapshot> mixTechnologySnapshots = depinder.getCommitRegistry().getAll().stream()
+        List<Snapshot> mixTechnologySnapshots = depinder.getCommitRegistry().getAll().stream()
                 .map(commit -> {
                     List<MixTechFile> mixTechFiles = commit.getFileRegistry().getAll().stream()
                             .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, threshold))
@@ -38,11 +39,11 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
                 })
                 .collect(Collectors.toList());
 
-        Path filePath = Paths.get("results\\File_Mix_Results.json");
+        Path filePath = Paths.get("results", "File_Mix_Results.json");
         try {
             writeSnapshotsToFile(mixTechnologySnapshots, filePath);
         } catch (IOException e) {
-            throw new DepinderException("Could not write snapshots to file.", e);
+            throw new DepinderException("Could not write File Mix Result snapshot to file.", e);
         }
     }
 
