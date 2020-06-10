@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.writeSnapshotsToFile;
@@ -23,7 +22,6 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
 
     public void execute(Depinder depinder, String[] args) {
         String tech = args[2];
-        AtomicInteger commitIndex = new AtomicInteger(1);
         List<Snapshot> snapshots = depinder.getCommitRegistry().getAll().stream()
                 .flatMap(commit -> {
                     Map<String, List<DepinderResult>> techToResults = commit.getResults().stream()
@@ -33,7 +31,7 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                             .map(techId -> {
                                 List<String> files = techToResults.get(techId).stream()
                                         .map(DepinderResult::getDepinderFile)
-                                        .map(DepinderFile::getFullyQualifiedName)
+                                        .map(DepinderFile::getName)
                                         .collect(Collectors.toList());
 
                                 int value = techToResults.get(techId).stream()
