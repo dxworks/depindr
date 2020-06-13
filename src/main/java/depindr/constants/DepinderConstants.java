@@ -11,5 +11,4 @@ public interface DepinderConstants {
     String JSON_FINGERPRINT_FILES = "dependecies";
 
     String CONFIGURATION_FILE = "depinder-conf.properties";
-    String TECH_TO_SEARCH_FOR = "tech";
 }

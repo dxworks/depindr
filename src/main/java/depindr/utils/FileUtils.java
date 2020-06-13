@@ -2,15 +2,24 @@ package depindr.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import depindr.DepinderResult;
+import depindr.constants.DepinderConstants;
+import depindr.json.Dependency;
+import depindr.model.entity.Commit;
 import depindr.model.snapshot.Snapshot;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FileUtils {
@@ -53,20 +62,6 @@ public class FileUtils {
         return ret;
     }
 
-//    public static void writeSnapshotsToFile(Set<TechnologySnapshot> snapshots, Path filePath) throws IOException {
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        try {
-//            FileWriter writer = new FileWriter(filePath.toFile());
-//            gson.toJson(snapshots, writer);
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            log.error("Could not write JSON file!", e);
-//            throw e;
-//        }
-//    }
-
-
     public static void writeSnapshotsToFile(Collection<Snapshot> snapshots, Path filePath) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
@@ -78,5 +73,21 @@ public class FileUtils {
             log.error("Could not write JSON file!", e);
             throw e;
         }
+    }
+
+
+    public static void CreateOutputFolder(String folderName) {
+        File resultsFolder = new File("results" + File.separator + DepinderConstants.PROJECT_ID + File.separator + folderName);
+        if (!resultsFolder.exists())
+            //noinspection ResultOfMethodCallIgnored
+            resultsFolder.mkdirs();
+    }
+
+    @NotNull
+    public static List<Commit> getCommitsInChronologicalOrder(Dependency dependency) {
+        return dependency.getDepinderResults().stream()
+                .map(DepinderResult::getCommit)
+                .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
+                .collect(Collectors.toList());
     }
 }

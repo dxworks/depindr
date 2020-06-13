@@ -3,6 +3,7 @@ package depindr.analyzers;
 import depindr.Depinder;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
+import depindr.constants.DepinderConstants;
 import depindr.exceptions.DepinderException;
 import depindr.model.snapshot.MixTechFile;
 import depindr.model.snapshot.MixTechnologySnapshot;
@@ -12,6 +13,7 @@ import depindr.model.snapshot.TechUsage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
     public void execute(Depinder depinder, String[] args) {
 
         int threshold = Integer.parseInt(args[1]);
+        String fileName = args[2];
 
         List<Snapshot> mixTechnologySnapshots = depinder.getCommitRegistry().getAll().stream()
                 .map(commit -> {
@@ -33,13 +36,13 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
 
                     return MixTechnologySnapshot.builder()
                             .commitID(commit.getID())
-                            .snapshotTimestamp(commit.getAuthorTimestamp())
+                            .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                             .files(mixTechFiles)
                             .build();
                 })
                 .collect(Collectors.toList());
 
-        Path filePath = Paths.get("results", "File_Mix_Results.json");
+        Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, fileName);
         try {
             writeSnapshotsToFile(mixTechnologySnapshots, filePath);
         } catch (IOException e) {

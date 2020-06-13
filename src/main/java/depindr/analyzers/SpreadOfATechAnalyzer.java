@@ -3,26 +3,33 @@ package depindr.analyzers;
 import depindr.Depinder;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
+import depindr.constants.DepinderConstants;
 import depindr.exceptions.DepinderException;
+import depindr.model.entity.Commit;
 import depindr.model.snapshot.Snapshot;
 import depindr.model.snapshot.TechnologySnapshot;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static depindr.utils.FileUtils.CreateOutputFolder;
 import static depindr.utils.FileUtils.writeSnapshotsToFile;
 
 public class SpreadOfATechAnalyzer implements DepinderCommand {
     //at all commits
 
     public void execute(Depinder depinder, String[] args) {
+        String folderName = "Spread_per_commit";
+        String fileName = args[1];
         String tech = args[2];
+
         List<Snapshot> snapshots = depinder.getCommitRegistry().getAll().stream()
+                .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
                 .flatMap(commit -> {
                     Map<String, List<DepinderResult>> techToResults = commit.getResults().stream()
                             .collect(Collectors.groupingBy(depinderResult -> depinderResult.getDependency().getID()));
@@ -40,14 +47,17 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                                 return TechnologySnapshot.builder()
                                         .commitID(commit.getID())
                                         .value(value)
-                                        .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                                        .snapshotTimestamp(commit.getAuthorTimestamp().toInstant().toEpochMilli())
                                         .techId(techId)
                                         .files(files)
                                         .numberOfFiles(files.size())
                                         .build();
                             })
                             .collect(Collectors.toList());
-                    Path filePath = Paths.get("results", commit.getID() + ".json");
+
+                    CreateOutputFolder(folderName);
+
+                    Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, folderName, commit.getID() + ".json");
                     try {
                         writeSnapshotsToFile(commitSnapshots, filePath);
                     } catch (IOException e) {
@@ -58,7 +68,7 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                 })
                 .collect(Collectors.toList());
 
-        Path filePath = Paths.get("results", "Spread_Results.json");
+        Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, fileName);
         try {
             writeSnapshotsToFile(snapshots, filePath);
         } catch (IOException e) {
@@ -69,11 +79,11 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
 
     @Override
     public boolean parse(String[] args) {
-        return args.length == 4;
+        return args.length == 3;
     }
 
     @Override
     public String usage() {
-        return "depinder --spread <json_output_name_for_results> <technology_name> <flag_for_removal_of_comments>";
+        return "depinder --spread <json_output_name_for_results> <flag_for_removal_of_comments>";
     }
 }

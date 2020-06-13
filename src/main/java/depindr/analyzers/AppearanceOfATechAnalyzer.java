@@ -1,28 +1,26 @@
 package depindr.analyzers;
 
 import depindr.Depinder;
-import depindr.DepinderResult;
+import depindr.constants.DepinderConstants;
 import depindr.exceptions.DepinderException;
-import depindr.json.Dependency;
 import depindr.model.entity.Commit;
 import depindr.model.snapshot.AppearanceSnapshot;
 import depindr.model.snapshot.Snapshot;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static depindr.utils.FileUtils.writeSnapshotsToFile;
+import static depindr.utils.FileUtils.*;
 
 public class AppearanceOfATechAnalyzer implements DepinderCommand {
 
     public void execute(Depinder depinder, String[] args) {
+        String folderName = "Appearance_per_commit";
+
         depinder.getDependencyRegistry().getAll().forEach(dependency -> {
             List<Commit> commits = getCommitsInChronologicalOrder(dependency);
 
@@ -30,7 +28,7 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
                 System.out.printf("Dependency %s appeared in commit %s on %s%n authored by %s\n",
                         dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString(), commit.getAuthor().getID().getName());
 
-                List<Snapshot> yolo = new ArrayList<>();
+                List<Snapshot> appearanceSnapshots = new ArrayList<>();
 
                 AppearanceSnapshot snapshot = AppearanceSnapshot.builder()
                         .nameOfDependency(dependency.getName())
@@ -39,11 +37,13 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
                         .authorName(commit.getAuthor().getID().getName())
                         .build();
 
-                yolo.add(snapshot);
+                appearanceSnapshots.add(snapshot);
 
-                Path filePath = Paths.get("results", "appearance", commit.getID() + ".json");
+                CreateOutputFolder(folderName);
+
+                Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, folderName, commit.getID() + ".json");
                 try {
-                    writeSnapshotsToFile(yolo, filePath);
+                    writeSnapshotsToFile(appearanceSnapshots, filePath);
                 } catch (IOException e) {
                     throw new DepinderException("Could not write Spread Result snapshot to file.", e);
                 }
@@ -51,22 +51,15 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
         });
     }
 
-    @NotNull
-    private List<Commit> getCommitsInChronologicalOrder(Dependency dependency) {
-        return dependency.getDepinderResults().stream()
-                .map(DepinderResult::getCommit)
-                .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public boolean parse(String[] args) {
-        return args.length == 3;
+        return args.length == 2;
     }
 
     @Override
     public String usage() {
-        return "depinder --appearance <json_output_name_for_results> <flag_for_removal_of_comments>";
+        return "depinder --appearance <flag_for_removal_of_comments>";
     }
 
 }

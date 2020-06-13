@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import static depindr.constants.DepinderConstants.PROJECT_ID;
+
 //singletoning at it's finest
 public class DepinderConfiguration {
     private static final DepinderConfiguration instance = new DepinderConfiguration();
@@ -30,6 +32,10 @@ public class DepinderConfiguration {
 
     public String getProperty(String property) {
         return properties.getProperty(property);
+    }
+
+    public String getProjectID() {
+        return getProperty(PROJECT_ID);
     }
 
     //for test purposes
