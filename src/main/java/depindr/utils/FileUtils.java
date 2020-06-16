@@ -3,7 +3,7 @@ package depindr.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import depindr.DepinderResult;
-import depindr.constants.DepinderConstants;
+import depindr.configuration.DepinderConfiguration;
 import depindr.json.Dependency;
 import depindr.model.entity.Commit;
 import depindr.model.snapshot.Snapshot;
@@ -77,7 +77,7 @@ public class FileUtils {
 
 
     public static void CreateOutputFolder(String folderName) {
-        File resultsFolder = new File("results" + File.separator + DepinderConstants.PROJECT_ID + File.separator + folderName);
+        File resultsFolder = new File("results" + File.separator + DepinderConfiguration.getInstance().getProjectID() + File.separator + folderName);
         if (!resultsFolder.exists())
             //noinspection ResultOfMethodCallIgnored
             resultsFolder.mkdirs();

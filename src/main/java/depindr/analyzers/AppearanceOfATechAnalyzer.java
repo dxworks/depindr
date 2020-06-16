@@ -1,7 +1,7 @@
 package depindr.analyzers;
 
 import depindr.Depinder;
-import depindr.constants.DepinderConstants;
+import depindr.configuration.DepinderConfiguration;
 import depindr.exceptions.DepinderException;
 import depindr.model.entity.Commit;
 import depindr.model.snapshot.AppearanceSnapshot;
@@ -41,7 +41,7 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
 
                 CreateOutputFolder(folderName);
 
-                Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, folderName, commit.getID() + ".json");
+                Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), folderName, commit.getID() + ".json");
                 try {
                     writeSnapshotsToFile(appearanceSnapshots, filePath);
                 } catch (IOException e) {

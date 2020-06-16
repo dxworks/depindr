@@ -3,7 +3,7 @@ package depindr.analyzers;
 import depindr.Depinder;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
-import depindr.constants.DepinderConstants;
+import depindr.configuration.DepinderConfiguration;
 import depindr.exceptions.DepinderException;
 import depindr.model.snapshot.MixTechFile;
 import depindr.model.snapshot.MixTechnologySnapshot;
@@ -42,7 +42,7 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
                 })
                 .collect(Collectors.toList());
 
-        Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, fileName);
+        Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), fileName);
         try {
             writeSnapshotsToFile(mixTechnologySnapshots, filePath);
         } catch (IOException e) {

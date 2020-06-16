@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TechnologySnapshot implements Snapshot {
-    private long snapshotTimestamp;
+    private String snapshotTimestamp;
     private int numberOfFiles;
     private int value;
     private List<String> files;

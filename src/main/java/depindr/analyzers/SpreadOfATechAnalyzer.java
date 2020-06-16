@@ -3,7 +3,7 @@ package depindr.analyzers;
 import depindr.Depinder;
 import depindr.DepinderFile;
 import depindr.DepinderResult;
-import depindr.constants.DepinderConstants;
+import depindr.configuration.DepinderConfiguration;
 import depindr.exceptions.DepinderException;
 import depindr.model.entity.Commit;
 import depindr.model.snapshot.Snapshot;
@@ -12,6 +12,7 @@ import depindr.model.snapshot.TechnologySnapshot;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,8 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                                 return TechnologySnapshot.builder()
                                         .commitID(commit.getID())
                                         .value(value)
-                                        .snapshotTimestamp(commit.getAuthorTimestamp().toInstant().toEpochMilli())
+//                                        .snapshotTimestamp(commit.getAuthorTimestamp().toInstant().toEpochMilli())
+                                        .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ISO_INSTANT))
                                         .techId(techId)
                                         .files(files)
                                         .numberOfFiles(files.size())
@@ -57,7 +59,7 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
 
                     CreateOutputFolder(folderName);
 
-                    Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, folderName, commit.getID() + ".json");
+                    Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), folderName, commit.getID() + ".json");
                     try {
                         writeSnapshotsToFile(commitSnapshots, filePath);
                     } catch (IOException e) {
@@ -68,7 +70,7 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                 })
                 .collect(Collectors.toList());
 
-        Path filePath = Paths.get("results", DepinderConstants.PROJECT_ID, fileName);
+        Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), fileName);
         try {
             writeSnapshotsToFile(snapshots, filePath);
         } catch (IOException e) {
