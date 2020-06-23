@@ -1,9 +1,9 @@
 package depindr;
 
-import depindr.json.Dependency;
 import depindr.model.dto.FingerprintMatch;
 import depindr.model.entity.Author;
 import depindr.model.entity.Commit;
+import depindr.model.entity.Dependency;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -2,6 +2,7 @@ package depindr.json;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import depindr.model.entity.Dependency;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;

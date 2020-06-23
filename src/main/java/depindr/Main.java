@@ -95,6 +95,10 @@ public class Main {
                 return new SpreadOfATechAnalyzer();
             case MIX:
                 return new FileMixTechnologyAnalyzer();
+            case AUTHORS:
+                return new NumberOfAuthors();
+            case AUTHORS_KNOWLEDGE:
+                return new AuthorKnowledge();
             default:
                 return null;
         }

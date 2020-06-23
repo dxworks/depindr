@@ -2,7 +2,7 @@
     <configuration default="false" name="Mix" type="Application" factoryName="Application">
         <option name="MAIN_CLASS_NAME" value="depindr.Main"/>
         <module name="depinder"/>
-        <option name="PROGRAM_PARAMETERS" value="--mix 3 mix_file_results.json false"/>
+        <option name="PROGRAM_PARAMETERS" value="--mix 2 mix_file_results.json false"/>
         <option name="VM_PARAMETERS" value="-Xmx6g"/>
         <extension name="coverage">
             <pattern>

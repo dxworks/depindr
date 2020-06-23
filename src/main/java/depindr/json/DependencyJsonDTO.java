@@ -1,5 +1,6 @@
 package depindr.json;
 
+import depindr.model.entity.Dependency;
 import depindr.utils.ImportUtils;
 import lombok.Data;
 

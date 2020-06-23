@@ -1,9 +1,9 @@
-package depindr.json;
+package depindr.model.entity;
 
 import depindr.DepinderFile;
 import depindr.DepinderResult;
+import depindr.json.LanguageRegistry;
 import depindr.model.dto.FingerprintMatch;
-import depindr.model.entity.Entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

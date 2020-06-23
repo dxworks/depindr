@@ -2,7 +2,6 @@ package depindr;
 
 import depindr.exceptions.DepinderException;
 import depindr.git.GitClient;
-import depindr.json.Dependency;
 import depindr.json.JsonFingerprintParser;
 import depindr.model.dto.AuthorID;
 import depindr.model.dto.CommitDTO;
