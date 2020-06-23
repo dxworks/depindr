@@ -10,6 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TechnologySnapshot implements Snapshot {
+    private List<String> authors;
+    private int nrAuthors;
     private String snapshotTimestamp;
     private int numberOfFiles;
     private int value;

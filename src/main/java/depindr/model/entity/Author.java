@@ -26,6 +26,10 @@ public class Author implements Entity<AuthorID> {
         return authorID;
     }
 
+    public List<DepinderResult> getResults() {
+        return results;
+    }
+
     public void addResult(DepinderResult depinderResult) {
         results.add(depinderResult);
     }

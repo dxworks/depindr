@@ -1,7 +1,7 @@
 package depindr.analyzers;
 
 import depindr.Depinder;
-
+//care autor stie ce tehnologie
 public class AuthorKnowledge implements DepinderCommand {
     @Override
     public boolean parse(String[] args) {

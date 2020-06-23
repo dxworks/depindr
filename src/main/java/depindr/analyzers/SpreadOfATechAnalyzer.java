@@ -5,6 +5,8 @@ import depindr.DepinderFile;
 import depindr.DepinderResult;
 import depindr.configuration.DepinderConfiguration;
 import depindr.exceptions.DepinderException;
+import depindr.model.dto.AuthorID;
+import depindr.model.entity.Author;
 import depindr.model.entity.Commit;
 import depindr.model.snapshot.Snapshot;
 import depindr.model.snapshot.TechnologySnapshot;
@@ -42,12 +44,21 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
                                         .map(DepinderFile::getName)
                                         .collect(Collectors.toList());
 
+                                List<String> authors = techToResults.get(techId).stream()
+                                        .map(DepinderResult::getAuthor)
+                                        .map(Author::getID)
+                                        .map(AuthorID::getName)
+                                        .distinct()
+                                        .collect(Collectors.toList());
+
                                 int value = techToResults.get(techId).stream()
                                         .mapToInt(DepinderResult::getValue).sum();
 
                                 return TechnologySnapshot.builder()
                                         .commitID(commit.getID())
                                         .value(value)
+                                        .authors(authors)
+                                        .nrAuthors(authors.size())
 //                                        .snapshotTimestamp(commit.getAuthorTimestamp().toInstant().toEpochMilli())
                                         .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ISO_INSTANT))
                                         .techId(techId)
