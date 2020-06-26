@@ -24,13 +24,21 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
 
     public void execute(Depinder depinder, String[] args) {
 
-        int threshold = Integer.parseInt(args[1]);
-        String fileName = args[2];
+        int threshold;
+        String fileName;
+        if (args[0].equals("--all")) {
+            fileName = args[3];
+            threshold = Integer.parseInt(args[4]);
+        } else {
+            threshold = Integer.parseInt(args[1]);
+            fileName = args[2];
+        }
 
+        int finalThreshold = threshold;
         List<Snapshot> mixTechnologySnapshots = depinder.getCommitRegistry().getAll().stream()
                 .map(commit -> {
                     List<MixTechFile> mixTechFiles = commit.getFileRegistry().getAll().stream()
-                            .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, threshold))
+                            .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, finalThreshold))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 

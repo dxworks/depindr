@@ -25,13 +25,14 @@ public class HelpCommand implements DepinderCommand {
                 new VersionCommand(),
                 new AppearanceOfATechAnalyzer(),
                 new SpreadOfATechAnalyzer(),
-                new FileMixTechnologyAnalyzer())
-//                new ValueOfTechForEachCommit())
+                new FileMixTechnologyAnalyzer(),
+                new AuthorKnowledge(),
+                new AllCommands())
                 .map(DepinderCommand::usage)
                 .map(s -> "\t" + s)
                 .collect(Collectors.joining("\n"));
 
-        usage += "\n\nPlease run depinder with the specified commands from the folder you have installed DepindR to!\n";
+        usage += "\n\nPlease run depinder with the specified commands from the folder you have installed Depinder to!\n";
 
         System.out.println(usage);
     }

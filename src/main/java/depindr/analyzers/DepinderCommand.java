@@ -10,7 +10,7 @@ public interface DepinderCommand {
     String SPREAD = "--spread";
     String MIX = "--mix";
     String AUTHORS = "--authors";
-    String AUTHORS_KNOWLEDGE = "--authors_knowledge";
+    String ALL = "--all";
     List<String> VERSION = Arrays.asList("version", "-version", "--version", "-v");
     List<String> HELP = Arrays.asList("help", "-help", "--help", "-h");
 

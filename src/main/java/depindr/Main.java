@@ -96,9 +96,9 @@ public class Main {
             case MIX:
                 return new FileMixTechnologyAnalyzer();
             case AUTHORS:
-                return new NumberOfAuthors();
-            case AUTHORS_KNOWLEDGE:
                 return new AuthorKnowledge();
+            case ALL:
+                return new AllCommands();
             default:
                 return null;
         }

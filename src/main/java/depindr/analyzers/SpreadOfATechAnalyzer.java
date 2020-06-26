@@ -28,9 +28,12 @@ public class SpreadOfATechAnalyzer implements DepinderCommand {
 
     public void execute(Depinder depinder, String[] args) {
         String folderName = "Spread_per_commit";
-        String fileName = args[1];
-        String tech = args[2];
-
+        String fileName;
+        if (args[0].equals("--all"))
+            fileName = args[2];
+        else {
+            fileName = args[1];
+        }
         List<Snapshot> snapshots = depinder.getCommitRegistry().getAll().stream()
                 .sorted(Comparator.comparing(Commit::getAuthorTimestamp))
                 .flatMap(commit -> {

@@ -25,9 +25,8 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
             List<Commit> commits = getCommitsInChronologicalOrder(dependency);
 
             commits.stream().findFirst().ifPresent(commit -> {
-                System.out.printf("Dependency %s appeared in commit %s on %s%n authored by %s\n",
-                        dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString(), commit.getAuthor().getID().getName());
-
+//                System.out.printf("Dependency %s appeared in commit %s on %s%n authored by %s\n",
+//                        dependency.getName(), commit.getID(), commit.getAuthorTimestamp().toString(), commit.getAuthor().getID().getName());
                 List<Snapshot> appearanceSnapshots = new ArrayList<>();
 
                 AppearanceSnapshot snapshot = AppearanceSnapshot.builder()
@@ -45,7 +44,7 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
                 try {
                     writeSnapshotsToFile(appearanceSnapshots, filePath);
                 } catch (IOException e) {
-                    throw new DepinderException("Could not write Spread Result snapshot to file.", e);
+                    throw new DepinderException("Could not write Appearance Result snapshot to file.", e);
                 }
             });
         });
