@@ -53,7 +53,16 @@ public class AppearanceOfATechAnalyzer implements DepinderCommand {
 
     @Override
     public boolean parse(String[] args) {
-        return args.length == 2;
+
+        if (args.length != 2)
+            return false;
+
+        if ((!args[1].matches("true")) && (!args[1].matches("false"))) {
+            System.out.println("Flag not supported. Please provide true/false");
+            return false;
+        }
+
+        return true;
     }
 
     @Override

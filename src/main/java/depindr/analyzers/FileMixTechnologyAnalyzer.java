@@ -17,6 +17,8 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.writeSnapshotsToFile;
@@ -86,7 +88,23 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
 
     @Override
     public boolean parse(String[] args) {
-        return args.length == 4;
+        Pattern pattern = Pattern.compile("\\.json$");
+        Matcher matcher = pattern.matcher(args[1]);
+
+        if (args.length != 4)
+            return false;
+
+        if (!matcher.find()) {
+            System.out.println("File format not supported. Please provide a <mix.json> file name!");
+            return false;
+        }
+
+        if ((!args[3].matches("true")) && (!args[3].matches("false"))) {
+            System.out.println("Flag not supported. Please provide true/false");
+            return false;
+        }
+
+        return true;
     }
 
     @Override

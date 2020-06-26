@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static depindr.utils.FileUtils.writeSnapshotsToFile;
@@ -22,7 +24,23 @@ import static depindr.utils.FileUtils.writeSnapshotsToFile;
 public class AuthorKnowledge implements DepinderCommand {
     @Override
     public boolean parse(String[] args) {
-        return args.length == 3;
+        Pattern pattern = Pattern.compile("\\.json$");
+        Matcher matcher = pattern.matcher(args[1]);
+
+        if (args.length != 3)
+            return false;
+
+        if (!matcher.find()) {
+            System.out.println("File format not supported. Please provide a <authors.json> file name!");
+            return false;
+        }
+
+        if ((!args[2].matches("true")) && (!args[2].matches("false"))) {
+            System.out.println("Flag not supported. Please provide true/false");
+            return false;
+        }
+
+        return true;
     }
 
     @Override

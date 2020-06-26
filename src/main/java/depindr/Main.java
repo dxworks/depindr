@@ -47,7 +47,7 @@ public class Main {
         DepinderCommand depinderCommand = getDepinderCommand(command);
 
         if (depinderCommand == null) {
-            System.err.println("depinderCommand == null!!!\nInvalid command!\n");
+            System.err.println("Invalid command!\n");
             helpCommand.execute(null, args);
             return;
         }
@@ -71,7 +71,7 @@ public class Main {
 
         depinderCommand.execute(depinder, args);
 
-        System.out.println("DepindR finished analysis in " + timer.stop());
+        System.out.println("Depinder finished analysis in " + timer.stop());
 
     }
 
