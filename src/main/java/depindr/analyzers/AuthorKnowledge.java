@@ -8,6 +8,7 @@ import depindr.model.dto.AuthorDependencyKnowledgeDTO;
 import depindr.model.entity.Author;
 import depindr.model.snapshot.Snapshot;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +46,11 @@ public class AuthorKnowledge implements DepinderCommand {
                         .dependencyKnowledge(getAuthorKnowledge(author))
                         .build()
         ).collect(Collectors.toList());
+
+        File resultsFolder = new File("results" + File.separator + DepinderConfiguration.getInstance().getProjectID());
+        if (!resultsFolder.exists())
+            //noinspection ResultOfMethodCallIgnored
+            resultsFolder.mkdirs();
 
         Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), fileName);
         try {

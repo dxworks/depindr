@@ -10,6 +10,7 @@ import depindr.model.snapshot.MixTechnologySnapshot;
 import depindr.model.snapshot.Snapshot;
 import depindr.model.snapshot.TechUsage;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,7 +39,7 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
         List<Snapshot> mixTechnologySnapshots = depinder.getCommitRegistry().getAll().stream()
                 .map(commit -> {
                     List<MixTechFile> mixTechFiles = commit.getFileRegistry().getAll().stream()
-                            .map(depinderFile -> transformDepindrFileToMixTechFile(depinderFile, finalThreshold))
+                            .map(depinderFile -> transformDepinderFileToMixTechFile(depinderFile, finalThreshold))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
@@ -51,6 +52,11 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
                 })
                 .collect(Collectors.toList());
 
+        File resultsFolder = new File("results" + File.separator + DepinderConfiguration.getInstance().getProjectID());
+        if (!resultsFolder.exists())
+            //noinspection ResultOfMethodCallIgnored
+            resultsFolder.mkdirs();
+
         Path filePath = Paths.get("results", DepinderConfiguration.getInstance().getProjectID(), fileName);
         try {
             writeSnapshotsToFile(mixTechnologySnapshots, filePath);
@@ -59,11 +65,11 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
         }
     }
 
-    private TechUsage transformDepindrResultToTechUsage(DepinderResult depinderResult) {
+    private TechUsage transformDepinderResultToTechUsage(DepinderResult depinderResult) {
         return new TechUsage(depinderResult.getDependency().getID(), depinderResult.getValue());
     }
 
-    private MixTechFile transformDepindrFileToMixTechFile(DepinderFile depinderFile, int threshold) {
+    private MixTechFile transformDepinderFileToMixTechFile(DepinderFile depinderFile, int threshold) {
         long count = depinderFile.getResults().size();
 
         if (count >= threshold) {
@@ -71,7 +77,7 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
                     .fileName(depinderFile.getFullyQualifiedName())
                     .numberOfTechs((int) count)
                     .techUsages(depinderFile.getResults().stream()
-                            .map(this::transformDepindrResultToTechUsage).collect(Collectors.toList()))
+                            .map(this::transformDepinderResultToTechUsage).collect(Collectors.toList()))
                     .build();
         }
 
