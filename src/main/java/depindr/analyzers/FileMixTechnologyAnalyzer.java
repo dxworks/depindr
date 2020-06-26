@@ -36,7 +36,8 @@ public class FileMixTechnologyAnalyzer implements DepinderCommand {
 
                     return MixTechnologySnapshot.builder()
                             .commitID(commit.getID())
-                            .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+
+                            .snapshotTimestamp(commit.getAuthorTimestamp().format(DateTimeFormatter.ISO_INSTANT))
                             .files(mixTechFiles)
                             .build();
                 })

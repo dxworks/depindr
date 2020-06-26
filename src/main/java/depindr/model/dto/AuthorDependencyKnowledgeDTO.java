@@ -1,5 +1,6 @@
 package depindr.model.dto;
 
+import depindr.model.snapshot.Snapshot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorDependencyKnowledgeDTO {
+public class AuthorDependencyKnowledgeDTO implements Snapshot {
     private String authorName;
     private String authorEmail;
     private Map<String, Integer> dependencyKnowledge;
