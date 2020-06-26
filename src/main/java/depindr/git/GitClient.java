@@ -22,7 +22,9 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -43,7 +45,7 @@ public class GitClient {
     }
 
     public List<CommitDTO> getAllCommits(String repoPath) throws NoSuchGitRepoException {
-        System.out.println("Commits from " + repoPath);
+        System.out.println("<INFO> " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "\tCommits from " + repoPath);
         try {
             return StreamSupport.stream(
                     gitObject.log()
@@ -68,7 +70,7 @@ public class GitClient {
 
     public void checkoutCommitForRepo(String commitName) {
         try {
-            System.out.format("Commit no: %d\n", commitNumber++);
+            System.out.println("<INFO> " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "\tCommit no: " + commitNumber++);
             gitObject.checkout().setName(commitName).call();
         } catch (GitAPIException e) {
             log.error("Could not checkout commit " + commitName, e);

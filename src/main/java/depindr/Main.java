@@ -1,5 +1,6 @@
 package depindr;
 
+import com.google.common.base.Stopwatch;
 import depindr.analyzers.*;
 import depindr.configuration.DepinderConfiguration;
 import depindr.constants.DepinderConstants;
@@ -10,18 +11,13 @@ import java.nio.file.Paths;
 
 import static depindr.analyzers.DepinderCommand.*;
 
-/*
- * #DONE 0.Read configuration file
- * #DONE 1.Read dependencies from .json file and print on console the file
- * #DONE 2. Read repository using JGit (checkout commits, read al files, create commit object, match Dependencies on all files)
- * */
-
 public class Main {
 
     private static final HelpCommand helpCommand = new HelpCommand();
     private static final VersionCommand versionCommand = new VersionCommand();
 
     public static void main(String[] args) {
+        Stopwatch timer = Stopwatch.createStarted();
 
         if (args == null) {
             System.err.println("Arguments cannot be null");
@@ -75,7 +71,7 @@ public class Main {
 
         depinderCommand.execute(depinder, args);
 
-        System.out.println("DepindR finished analysis.");
+        System.out.println("DepindR finished analysis in " + timer.stop());
 
     }
 
