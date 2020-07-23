@@ -8,9 +8,28 @@
     <artifactId>depinder</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Mario Rivis</name>
+        </developer>
+        <developer>
+            <name>Bogdan Pocol</name>
+        </developer>
+        <developer>
+            <name>Andy Molin</name>
+        </developer>
+    </developers>
 
     <properties>
-        <executable.jar.finalName>depinder</executable.jar.finalName>
+        <executable.jar.finalName>depindr</executable.jar.finalName>
         <main.class>depindr.Main</main.class>
     </properties>
 
